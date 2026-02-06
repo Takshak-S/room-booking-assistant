@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "../styles/navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -13,13 +14,13 @@ function Navbar() {
   }
 
   return (
-    <div style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
-      <span>
+    <div>
+      <div>
         <strong>{profile.role.toUpperCase()}</strong> |{" "}
         {profile.department}
-      </span>
+      </div>
 
-      <span style={{ float: "right" }}>
+      <div>
         <button onClick={() => navigate("/dashboard")}>
           Dashboard
         </button>
@@ -29,7 +30,7 @@ function Navbar() {
         )}
 
         <button onClick={handleLogout}>Logout</button>
-      </span>
+      </div>
     </div>
   );
 }
