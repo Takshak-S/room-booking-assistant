@@ -3,8 +3,7 @@ import styles from "./Login.module.css";
 import supabase from "../config/supabase";
 
 function Login() {
-  const navigate = useNavigate();
-
+  
   const handleLogin =async () => {
        const {error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
