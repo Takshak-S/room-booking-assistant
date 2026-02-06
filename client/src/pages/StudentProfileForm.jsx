@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import supabase from "../config/supabase";
 
 function StudentProfileForm() {
   const navigate = useNavigate();
@@ -8,23 +9,36 @@ function StudentProfileForm() {
   const [name, setName] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-
+    const { data } = await supabase.auth.getSession();
+    const token = data.session.access_token;
+    const bodyData = {
+      name,
+      register_number:registrationNumber,
+      mobile_number:mobileNumber
+    }
+    console.log(token);
     // Store basic profile info locally for navbar / UI usage
-    localStorage.setItem(
-      "userProfile",
-      JSON.stringify({
-        role: "Student",
-        registrationNumber,
-        name,
-        mobileNumber,
-      })
-    );
+    const response = await fetch('http://localhost:5000/api/profile/student', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(bodyData)    
+            }).then(res=>res.json());
+            if(response.success===true){
+              navigate("/home");
+            }
+            else{
+              navigate("/");
+            }
+            
 
     // TODO: Call backend API to mark profile_completed = true for the user
 
-    navigate("/home");
+    
   };
 
   return (

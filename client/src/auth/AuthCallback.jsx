@@ -20,7 +20,10 @@ export default function AuthCallback() {
             const { role, profile_completed } = response || {};
             if (!profile_completed) {
                 if (role === 'STUDENT') navigate('/complete-form/student');
-                else navigate('/complete-form/faculty');
+                else if(role==="FACULTY") navigate('/complete-form/faculty');
+                else{
+                    navigate("/");
+                }
             } else {
                 navigate("/home");
             }
