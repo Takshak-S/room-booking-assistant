@@ -51,4 +51,32 @@ router.get('/me', requireAuth, async (req, res) => {
   });
 });
 
+router.get('/me/clubs', requireAuth, async (req, res) => {
+  const userId = req.user.id;
+
+  const { data, error } = await supabase
+    .from('club_members')
+    .select(`
+      club_id,
+      designation,
+      clubs ( name )
+    `)
+    .eq('user_id', userId)
+    .eq('role', 'BOARD')
+    .eq('is_active', true);
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json(
+    data.map(row => ({
+      club_id: row.club_id,
+      club_name: row.clubs.name,
+      designation: row.designation
+    }))
+  );
+});
+
+
 export default router;
