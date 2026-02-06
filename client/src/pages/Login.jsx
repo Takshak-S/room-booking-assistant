@@ -1,13 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import supabase from "../config/supabase";
 
 function Login() {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    const mockUser = { name: "VIT Student", email: "student@vitstudent.ac.in" };
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    navigate("/setup-profile");
+  const handleLogin =async () => {
+       const {error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: "http://localhost:5173/auth/callback"
+        }
+      })
+
+      if (error) console.error(error)   
   };
 
   return (
