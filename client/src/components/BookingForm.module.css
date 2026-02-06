@@ -1,24 +1,9 @@
-.formContainer {
+.bookingForm {
   width: 100%;
-}
-
-.dateTimeRow {
-  display: flex;
-  flex-wrap: wrap; 
-  gap: 12px;
-  width: 100%;
-}
-
-.dateTimeRow input {
-  flex: 1; 
-  min-width: 140px; 
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
 }
 
 .submitBtn {
-  width: 100%;
+  min-width: 160px;
   padding: 12px;
   background-color: var(--secondary);
   color: white;
@@ -32,6 +17,24 @@
 
 .submitBtn:hover {
   background-color: var(--primary-hover);
+}
+
+.actionsRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.cancelBtn {
+  min-width: 120px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--text-main);
+  cursor: pointer;
 }
 
 .error {
@@ -87,4 +90,30 @@
   background-color: #333; /* Matches your dark theme from images */
   color: white;
   width: 100%;
+}
+
+.fileUploadRow {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fileInputWrapper {
+  position: relative;
+}
+
+.fileInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+  background-color: #333;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.fileName {
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }

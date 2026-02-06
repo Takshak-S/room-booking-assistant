@@ -63,4 +63,69 @@
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
+ }
+
+.profileWrapper {
+  position: relative;
+}
+
+.profileAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background-color: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(248, 250, 252, 0.3);
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profileDropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  min-width: 220px;
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: 10px 0;
+  z-index: 1100;
+}
+
+.profileDetails {
+  padding: 0 14px 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profileName {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.profileRole {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.profileMeta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.dropdownLogoutBtn {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  color: #ef4444;
+  padding: 8px 14px 4px 14px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
 }

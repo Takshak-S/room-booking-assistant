@@ -20,18 +20,39 @@ function ProfileSetup() {
         <p style={{color: 'var(--text-muted)'}}>Authenticating as <strong>{role}</strong></p>
         
         <form className={styles.form} onSubmit={handleSubmit}>
+          {/* Common field: Full name */}
+          <input 
+            className={styles.inputField}
+            name="name"
+            placeholder="Full Name"
+            required 
+          />
+
+          {/* Student / Faculty specific identifier */}
           <input 
             className={styles.inputField}
             name={role === "Student" ? "regNo" : "empId"} 
             placeholder={role === "Student" ? "Registration Number" : "Employee ID"} 
             required 
           />
+
+          {/* Common field: Phone number (explicitly required for students) */}
+          <input 
+            className={styles.inputField}
+            name="phone"
+            placeholder="Phone Number"
+            type="tel"
+            required 
+          />
+
+          {/* Department / School */}
           <input 
             className={styles.inputField}
             name="dept" 
             placeholder="Department / School (e.g., SITE)" 
             required 
           />
+
           <button type="submit" className={styles.submitBtn}>Access Dashboard</button>
         </form>
       </div>

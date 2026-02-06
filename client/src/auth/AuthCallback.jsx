@@ -6,20 +6,33 @@ export default function AuthCallback() {
     const navigate = useNavigate();
 
     async function authenticatWithBackend() {
-        const { data } = await supabase.auth.getSession();
-        const token = data.session.access_token;
-
-        const response = await fetch('http://localhost:5000/api/me', {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`
+        try {
+            const { data } = await supabase.auth.getSession();
+            const token = data.session.access_token;
+    
+            const response = await fetch('http://localhost:5000/api/me', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(res=>res.json());
+            console.log(response)
+            const { role, profile_completed } = response || {};
+            if (!profile_completed) {
+                if (role === 'STUDENT') navigate('/complete-form/student');
+                else navigate('/complete-form/faculty');
+            } else {
+                navigate("/home");
             }
-        }).then(res=>res.json());
-        console.log(response)
+
+        } catch (error) {
+            console.error("Error authenticating with backend:", error);
+            navigate("/login");
+        }
+
     }
 
     useEffect(()=>{
         authenticatWithBackend();
-        navigate("/setup-profile");
-    })
+    },[])
 }
