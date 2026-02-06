@@ -1,37 +1,27 @@
 import { useNavigate } from "react-router-dom";
+import styles from "./Login.module.css";
 
 function Login() {
   const navigate = useNavigate();
 
-  function handleGoogleLogin() {
-    // Mock Google user data
-    const user = {
-      name: "Test User",
-      email: "student@college.edu",
-    };
-
-    // Save user info
-    localStorage.setItem("user", JSON.stringify(user));
-
-    // Check if profile exists
-    const profile = localStorage.getItem("userProfile");
-
-    if (!profile) {
-      navigate("/setup-profile");
-    } else {
-      navigate("/dashboard");
-    }
-  }
+  const handleLogin = () => {
+    const mockUser = { name: "VIT Student", email: "student@vitstudent.ac.in" };
+    localStorage.setItem("user", JSON.stringify(mockUser));
+    navigate("/setup-profile");
+  };
 
   return (
-    <div>
-      <h2>Room Booking System</h2>
-
-      <button onClick={handleGoogleLogin}>
-        Sign in with Google
-      </button>
+    <div className={styles.pageWrapper}>
+      <div className={styles.loginCard}>
+        <h2 style={{marginBottom: '8px'}}>VITMAS Portal</h2>
+        <p style={{color: 'var(--text-muted)'}}>Room Booking Assistant</p>
+        <div className={styles.form}>
+          <button className={styles.googleBtn} onClick={handleLogin}>
+            Sign in with Google
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
-
 export default Login;

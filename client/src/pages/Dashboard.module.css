@@ -1,0 +1,40 @@
+.mainWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Consistent spacing between sections */
+}
+
+.section {
+  background: var(--bg-card);
+  padding: 30px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.sectionHeader {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionHeader::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background-color: var(--accent);
+  border-radius: 2px;
+}
+
+/* Container for the booking form to prevent it from stretching too wide */
+.formWidthLimit {
+  max-width: 600px;
+}

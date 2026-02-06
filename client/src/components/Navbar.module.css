@@ -1,0 +1,33 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--secondary);
+  color: white;
+  border-radius: var(--radius);
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.userContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.roleBadge {
+  background: var(--accent);
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.logoutBtn {
+  background: #ef4444; /* Alert Red */
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}

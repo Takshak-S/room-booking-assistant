@@ -1,4 +1,5 @@
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
+import styles from "./BookingForm.module.css";
 import bookingsData from "../data/bookings";
 
 function BookingForm({ resource, onBookingConfirmed }) {
@@ -7,127 +8,50 @@ function BookingForm({ resource, onBookingConfirmed }) {
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
 
-  function checkOverlap(existing, requested) {
-    return (
-      requested.start < existing.end &&
-      requested.end > existing.start
-    );
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    const requestedSlot = {
-      start: startTime,
-      end: endTime,
-    };
-
-    const conflict = bookingsData.find((b) => {
-      return (
-        b.resourceId === resource.id &&
-        b.date === date &&
-        checkOverlap(
-          { start: b.startTime, end: b.endTime },
-          requestedSlot
-        )
-      );
-    });
-
-    if (conflict) {
-      setStatus("conflict");
-    } else {
-      setStatus("available");
-    }
-  }
-
-  function handleConfirm() {
-    const newBooking = {
-      id: Date.now(),
-      resourceId: resource.id,
-      resourceName: resource.name,
-      date,
-      startTime,
-      endTime,
-    };
-
-    onBookingConfirmed(newBooking);
-
-    setStatus(null);
-    setDate("");
-    setStartTime("");
-    setEndTime("");
-  }
-
+  // Reset form if the user picks a different room
   useEffect(() => {
-    setDate("");
-    setStartTime("");
-    setEndTime("");
     setStatus(null);
+    setDate(""); setStartTime(""); setEndTime("");
   }, [resource]);
 
+  const checkOverlap = (existing, requested) => {
+    return requested.start < existing.end && requested.end > existing.start;
+  };
+
+  const handleCheck = (e) => {
+    e.preventDefault();
+    const requested = { start: startTime, end: endTime };
+
+    const conflict = bookingsData.find((b) => 
+      b.resourceId === resource.id && 
+      b.date === date && 
+      checkOverlap({ start: b.startTime, end: b.endTime }, requested)
+    );
+
+    setStatus(conflict ? "conflict" : "available");
+  };
 
   return (
-    <div style={{ marginTop: "20px" }}>
-      <h3>Book {resource.name}</h3>
-
-      <form onSubmit={handleSubmit}>
-        <label>
-          Date:
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </label>
-
-        <br />
-
-        <label>
-          Start Time:
-          <input
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            required
-          />
-        </label>
-
-        <br />
-
-        <label>
-          End Time:
-          <input
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            required
-          />
-        </label>
-
-        <br />
-
-        <button type="submit">Check Availability</button>
+    <div className={styles.formContainer}>
+      <form onSubmit={handleCheck}>
+        <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
+          <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
+          <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required />
+          <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required />
+        </div>
+        <button type="submit" style={{width: '100%', marginTop: '10px'}}>Check Availability</button>
       </form>
 
-      {status === "conflict" && (
-        <p style={{ color: "red" }}>
-          ❌ Time slot not available
-        </p>
-      )}
-
+      {status === "conflict" && <p className={styles.error}>❌ This slot is already booked.</p>}
       {status === "available" && (
-        <>
-          <p style={{ color: "green" }}>
-            ✅ Time slot available
-          </p>
-          <button 
-            disabled={status !== "available"} 
-            onClick={handleConfirm}
-          >
-            Confirm Booking
-          </button>
-        </>
+        <div className={styles.success}>
+          <p>✅ Room is free!</p>
+          <button onClick={() => onBookingConfirmed({
+            id: Date.now(),
+            resourceName: resource.name,
+            date, startTime, endTime
+          })}>Confirm Booking</button>
+        </div>
       )}
     </div>
   );

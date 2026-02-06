@@ -1,0 +1,21 @@
+.bookingForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.dateTimeRow {
+  display: flex;
+  flex-wrap: wrap; /* IMPORTANT: Wraps inputs to next line if screen is narrow */
+  gap: 12px;
+  width: 100%;
+}
+
+.dateTimeRow input {
+  flex: 1; /* Inputs grow to fill row */
+  min-width: 140px; /* Prevents them from becoming too tiny */
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}

@@ -1,37 +1,26 @@
 import { useNavigate } from "react-router-dom";
-import "../styles/navbar.css";
+import styles from "./Navbar.module.css";
 
 function Navbar() {
   const navigate = useNavigate();
+  const profile = JSON.parse(localStorage.getItem("userProfile"));
 
-  const profile = JSON.parse(
-    localStorage.getItem("userProfile")
-  );
-
-  function handleLogout() {
+  const handleLogout = () => {
     localStorage.clear();
     navigate("/");
-  }
+  };
 
   return (
-    <div>
-      <div>
-        <strong>{profile.role.toUpperCase()}</strong> |{" "}
-        {profile.department}
+    <nav className={styles.navbar}>
+      <div className={styles.userInfo}>
+        <span className={styles.roleTag}>{profile?.role?.toUpperCase()}</span>
+        <span>{profile?.name}</span>
       </div>
-
-      <div>
-        <button onClick={() => navigate("/dashboard")}>
-          Dashboard
-        </button>
-
-        {profile.role === "faculty" && (
-          <button>Approve Requests</button>
-        )}
-
-        <button onClick={handleLogout}>Logout</button>
+      <div className={styles.actions}>
+        <button onClick={() => navigate("/dashboard")}>Home</button>
+        <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
       </div>
-    </div>
+    </nav>
   );
 }
 

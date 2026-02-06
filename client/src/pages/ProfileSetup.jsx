@@ -1,86 +1,41 @@
 import { useNavigate } from "react-router-dom";
+import styles from "./Login.module.css";
 
 function ProfileSetup() {
   const navigate = useNavigate();
-
   const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.email.includes("faculty") ? "Faculty" : "Student";
 
-  const role = user.email.includes("faculty")
-    ? "faculty"
-    : "student";
-
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const formData = new FormData(e.target);
-    const profileData = Object.fromEntries(formData.entries());
-
-    const completeProfile = {
-      ...profileData,
-      role,
-      email: user.email,
-    };
-
-    localStorage.setItem(
-      "userProfile",
-      JSON.stringify(completeProfile)
-    );
-
+    const data = Object.fromEntries(new FormData(e.target));
+    localStorage.setItem("userProfile", JSON.stringify({ ...data, role }));
     navigate("/dashboard");
-  }
+  };
 
   return (
-    <div>
-      <h2>Complete Your Profile</h2>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          defaultValue={user.name}
-          readOnly
-        />
-
-        {role === "student" && (
-          <>
-            <input
-              name="rollNumber"
-              placeholder="Roll Number"
-              required
-            />
-            <input
-              name="year"
-              placeholder="Year"
-              required
-            />
-            <input
-              name="department"
-              placeholder="Department"
-              required
-            />
-          </>
-        )}
-
-        {role === "faculty" && (
-          <>
-            <input
-              name="employeeId"
-              placeholder="Employee ID"
-              required
-            />
-            <input
-              name="department"
-              placeholder="Department"
-              required
-            />
-          </>
-        )}
-
-        <button type="submit">
-          Save & Continue
-        </button>
-      </form>
+    <div className={styles.pageWrapper}>
+      <div className={styles.card}>
+        <h2 style={{color: 'var(--secondary)'}}>Profile Setup</h2>
+        <p style={{color: 'var(--text-muted)'}}>Authenticating as <strong>{role}</strong></p>
+        
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <input 
+            className={styles.inputField}
+            name={role === "Student" ? "regNo" : "empId"} 
+            placeholder={role === "Student" ? "Registration Number" : "Employee ID"} 
+            required 
+          />
+          <input 
+            className={styles.inputField}
+            name="dept" 
+            placeholder="Department / School (e.g., SITE)" 
+            required 
+          />
+          <button type="submit" className={styles.submitBtn}>Access Dashboard</button>
+        </form>
+      </div>
     </div>
   );
 }
-
 export default ProfileSetup;

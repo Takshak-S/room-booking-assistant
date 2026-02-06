@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import ResourceList from "../components/ResourceList";
 import BookingForm from "../components/BookingForm";
 import resources from "../data/resources";
+import styles from "./Dashboard.module.css";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -12,66 +13,56 @@ function Dashboard() {
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    const profile = localStorage.getItem("userProfile");
-
-    if (!user || !profile) {
-      navigate("/");
-    }
+    if (!user) navigate("/");
   }, [navigate]);
 
-  function handleSelect(resource) {
-    setSelectedResource(resource);
-  }
-
-  function handleBookingConfirmed(booking) {
-    setMyBookings((prev) => [...prev, booking]);
-  }
+  const handleBookingConfirmed = (newBooking) => {
+    setMyBookings(prev => [...prev, newBooking]);
+    setSelectedResource(null);
+  };
 
   return (
-    <div>
+    <div className={styles.mainWrapper}>
       <Navbar />
-
-      <h2>Dashboard</h2>
-
-      <h3>Select a Resource</h3>
-      <ResourceList
-        resources={resources}
-        onSelect={handleSelect}
-      />
-
-      {selectedResource && (
-        <>
-        <h3>Booking Details</h3>
-        <BookingForm
-          resource={selectedResource}
-          onBookingConfirmed={handleBookingConfirmed}
+      
+      {/* SECTION 1: RESOURCE SELECTION */}
+      <section className={styles.section}>
+        <h2 className={styles.sectionHeader}>Select a Facility</h2>
+        <ResourceList 
+          resources={resources} 
+          onSelect={setSelectedResource} 
+          selectedId={selectedResource?.id}
         />
-        </>
+      </section>
+
+      {/* SECTION 2: BOOKING FORM (Conditional) */}
+      {selectedResource && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHeader}>Book {selectedResource.name}</h2>
+          <div className={styles.formWidthLimit}>
+            <BookingForm 
+              resource={selectedResource} 
+              onBookingConfirmed={handleBookingConfirmed} 
+            />
+          </div>
+        </section>
       )}
 
+      {/* SECTION 3: SUMMARY */}
       {myBookings.length > 0 && (
-        <div style={{ marginTop: "30px" }}>
-          <h3>My Bookings</h3>
-
-          {myBookings.map((b) => (
-            <div
-              key={b.id}
-              style={{
-                border: "1px solid #ccc",
-                padding: "8px",
-                marginBottom: "6px",
-              }}
-            >
-              <p>
+        <section className={styles.section}>
+          <h2 className={styles.sectionHeader}>Your Recent Bookings</h2>
+          <div className={styles.resourceGrid}>
+            {myBookings.map(b => (
+              <div key={b.id} className={styles.card}>
                 <strong>{b.resourceName}</strong>
-              </p>
-              <p>
-                {b.date} | {b.startTime} – {b.endTime}
-              </p>
-            </div>
-          ))}
-        </div>
-
+                <p style={{color: 'var(--text-muted)'}}>
+                  {b.date} | {b.startTime} - {b.endTime}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );

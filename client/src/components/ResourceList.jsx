@@ -1,25 +1,22 @@
-function ResourceList({ resources, onSelect }) {
+import styles from "./ResourceList.module.css";
+
+function ResourceList({ resources, onSelect, selectedId }) {
   return (
-    <div>
-      <h3>Available Resources</h3>
-
+    <div className={styles.grid}>
       {resources.map((resource) => (
-        <div
-          key={resource.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            marginBottom: "8px",
-          }}
+        <div 
+          key={resource.id} 
+          className={`${styles.card} ${selectedId === resource.id ? styles.cardSelected : ""}`}
         >
-          <p>
-            <strong>{resource.name}</strong>
-          </p>
-          <p>Type: {resource.type}</p>
-          <p>Capacity: {resource.capacity}</p>
-
-          <button onClick={() => onSelect(resource)}>
-            Select
+          <strong>{resource.name}</strong>
+          <div style={{fontSize: '0.85rem', color: '#64748b'}}>
+            Type: {resource.type} | Cap: {resource.capacity}
+          </div>
+          <button 
+            className={styles.selectBtn} 
+            onClick={() => onSelect(resource)}
+          >
+            {selectedId === resource.id ? "Selected" : "Select Room"}
           </button>
         </div>
       ))}
