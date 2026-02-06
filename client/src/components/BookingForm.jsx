@@ -8,49 +8,78 @@ function BookingForm({ resource, onBookingConfirmed }) {
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
 
-  // Reset form if the user picks a different room
   useEffect(() => {
     setStatus(null);
     setDate(""); setStartTime(""); setEndTime("");
   }, [resource]);
 
-  const checkOverlap = (existing, requested) => {
-    return requested.start < existing.end && requested.end > existing.start;
-  };
-
   const handleCheck = (e) => {
     e.preventDefault();
     const requested = { start: startTime, end: endTime };
-
     const conflict = bookingsData.find((b) => 
       b.resourceId === resource.id && 
       b.date === date && 
-      checkOverlap({ start: b.startTime, end: b.endTime }, requested)
+      (requested.start < b.endTime && requested.end > b.startTime)
     );
-
     setStatus(conflict ? "conflict" : "available");
   };
 
   return (
-    <div className={styles.formContainer}>
+    <div className={styles.bookingForm}>
       <form onSubmit={handleCheck}>
-        <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap'}}>
-          <input type="date" value={date} onChange={e => setDate(e.target.value)} required />
-          <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required />
-          <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required />
+        <div className={styles.dateTimeRow}>
+          {/* Added Labels for each input */}
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Date</label>
+            <input 
+              type="date" 
+              value={date} 
+              onChange={e => setDate(e.target.value)} 
+              required 
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Start Time</label>
+            <input 
+              type="time" 
+              value={startTime} 
+              onChange={e => setStartTime(e.target.value)} 
+              required 
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>End Time</label>
+            <input 
+              type="time" 
+              value={endTime} 
+              onChange={e => setEndTime(e.target.value)} 
+              required 
+            />
+          </div>
         </div>
-        <button type="submit" style={{width: '100%', marginTop: '10px'}}>Check Availability</button>
+        
+        <button type="submit" className={styles.submitBtn}>
+          Check Availability
+        </button>
       </form>
 
       {status === "conflict" && <p className={styles.error}>❌ This slot is already booked.</p>}
+      
       {status === "available" && (
         <div className={styles.success}>
           <p>✅ Room is free!</p>
-          <button onClick={() => onBookingConfirmed({
-            id: Date.now(),
-            resourceName: resource.name,
-            date, startTime, endTime
-          })}>Confirm Booking</button>
+          <button 
+            className={styles.confirmBtn}
+            onClick={() => onBookingConfirmed({
+              id: Date.now(),
+              resourceName: resource.name,
+              date, startTime, endTime
+            })}
+          >
+            Confirm Booking
+          </button>
         </div>
       )}
     </div>

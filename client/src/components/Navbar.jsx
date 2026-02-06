@@ -13,12 +13,19 @@ function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.userInfo}>
-        <span className={styles.roleTag}>{profile?.role?.toUpperCase()}</span>
-        <span>{profile?.name}</span>
+        <div className={styles.userContainer}>
+          <span className={styles.roleBadge}>{profile?.role?.toUpperCase()}</span>
+          <span className={styles.userName}>{profile?.name}</span>
+        </div>
       </div>
+      
       <div className={styles.actions}>
-        <button onClick={() => navigate("/dashboard")}>Home</button>
-        <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
+        <button className={styles.homeBtn} onClick={() => navigate("/dashboard")}>
+          Home
+        </button>
+        <button className={styles.logoutBtn} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </nav>
   );

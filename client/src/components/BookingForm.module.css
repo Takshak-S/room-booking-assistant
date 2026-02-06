@@ -1,21 +1,90 @@
-.bookingForm {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.formContainer {
   width: 100%;
 }
 
 .dateTimeRow {
   display: flex;
-  flex-wrap: wrap; /* IMPORTANT: Wraps inputs to next line if screen is narrow */
+  flex-wrap: wrap; 
   gap: 12px;
   width: 100%;
 }
 
 .dateTimeRow input {
-  flex: 1; /* Inputs grow to fill row */
-  min-width: 140px; /* Prevents them from becoming too tiny */
+  flex: 1; 
+  min-width: 140px; 
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--secondary);
+  color: white;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  /* Specific change to lower the button */
+  margin-top: 15px; 
+}
+
+.submitBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.error {
+  color: var(--error);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.success {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.confirmBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Space between label and input */
+  flex: 1;  /* Makes all three inputs equal width */
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-left: 2px;
+}
+
+.dateTimeRow {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px; 
+  width: 100%;
+  margin-bottom: 15px; /* Space before the button */
+}
+
+.dateTimeRow input {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: #333; /* Matches your dark theme from images */
+  color: white;
+  width: 100%;
 }

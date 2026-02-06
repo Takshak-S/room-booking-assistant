@@ -13,7 +13,7 @@ html, body, #root {
 
 body {
   font-family: 'Inter', -apple-system, system-ui, sans-serif;
-  background-color: var(--bg-page);
+  background-color: var(--bg-page) !important;
   color: var(--text-main);
   line-height: 1.6;
 }

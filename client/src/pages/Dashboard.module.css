@@ -1,10 +1,12 @@
 .mainWrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 100px 20px 40px 20px;
   display: flex;
   flex-direction: column;
   gap: 40px; /* Consistent spacing between sections */
+  background-color: var(--bg-page); 
+  min-height: 100vh;
 }
 
 .section {

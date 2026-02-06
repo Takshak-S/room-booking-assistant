@@ -1,20 +1,20 @@
 :root {
-  /* Core Colors */
-  --primary: #1e40af;       /* Deep Cobalt */
+  --primary: #1e40af;
   --primary-hover: #1e3a8a;
-  --secondary: #0f172a;     /* Navy Slate */
-  --accent: #3b82f6;        /* Bright Blue */
-  
-  /* Neutral Palette */
-  --bg-page: #f1f5f9;       /* Soft Light Grey */
+  --secondary: #0f172a;
+  --accent: #3b82f6;
+  --bg-page: #f1f5f9;
   --bg-card: #ffffff;
   --text-main: #1e293b;
   --text-muted: #64748b;
   --border: #cbd5e1;
-  
-  /* Consistency */
   --radius: 10px;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
   --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Spacing Scale */
+  --space-sm: 12px;
+  --space-md: 24px;
+  --space-lg: 40px;
 }

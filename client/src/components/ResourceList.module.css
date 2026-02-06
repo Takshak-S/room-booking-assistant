@@ -1,14 +1,14 @@
 .resourceGrid {
   display: grid;
-  /* Automatically adjusts columns based on screen width */
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
+  width: 100%;
 }
 
 .card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 16px;
   background: white;
   padding: 24px;
   border-radius: var(--radius);
@@ -16,13 +16,17 @@
   transition: var(--transition);
 }
 
-.card:hover {
-  border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
 .selected {
   border: 2px solid var(--primary);
   background: #f0f7ff;
+}
+
+.selectBtn {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
