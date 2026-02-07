@@ -245,6 +245,14 @@ function Navbar() {
               {!historyLoading &&
                 history.map((b) => {
                   const upcoming = isUpcoming(b.end_time);
+                  const statusClass =
+                    b.status?.toLowerCase() === "approved"
+                      ? styles.statusApproved
+                      : b.status?.toLowerCase() === "pending"
+                        ? styles.statusPending
+                        : b.status?.toLowerCase() === "rejected"
+                          ? styles.statusRejected
+                          : styles.statusTag;
 
                   return (
                     <div key={b.id} className={styles.historyItem}>
@@ -264,7 +272,7 @@ function Navbar() {
                           {upcoming ? "Upcoming" : "Past"}
                         </span>
 
-                        <span className={styles.statusTag}>{b.status}</span>
+                        <span className={statusClass}>{b.status}</span>
                       </div>
 
                       {/* ACTIONS */}

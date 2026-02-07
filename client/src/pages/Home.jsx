@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Home.module.css";
+import Navbar from "../components/Navbar";
 
 function Home() {
   const navigate = useNavigate();
 
   return (
     <div className={styles.pageWrapper}>
+      <Navbar />
       <div className={styles.container}>
         {/* Hero Section */}
         <section className={styles.heroSection}>

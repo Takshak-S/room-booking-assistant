@@ -2,24 +2,139 @@
   width: 100%;
 }
 
-.submitBtn {
-  min-width: 160px;
-  padding: 14px 24px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
+.bookingForm form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bookingForm button[type="submit"],
+.bookingForm button[type="button"] {
+  padding: 12px 24px;
   border-radius: 10px;
   border: none;
+  cursor: pointer;
   font-weight: 600;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bookingForm button[type="submit"] {
+  background: var(--gradient-primary);
+  color: var(--secondary);
+  border: 1px solid var(--primary);
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+}
+
+.bookingForm button[type="submit"]::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.bookingForm button[type="submit"]:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.bookingForm button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.bookingForm button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.bookingForm button[type="button"] {
+  background: transparent;
+  color: var(--text-main);
+  border: 2px solid var(--border);
+}
+
+.bookingForm button[type="button"]:hover {
+  background: rgba(255, 0, 110, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+}
+
+/* Form Section Styling */
+.formSection {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: rgba(0, 240, 255, 0.03);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--primary);
+  position: relative;
+}
+
+.formSection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.submitBtn {
+  min-width: 160px;
+  padding: 14px 28px;
+  background: var(--gradient-primary);
+  color: var(--secondary);
+  border-radius: 10px;
+  border: 1px solid var(--primary);
+  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
   margin-top: 20px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submitBtn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.submitBtn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .submitBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.6);
 }
 
 .submitBtn:active {
@@ -36,72 +151,141 @@
 
 .cancelBtn {
   min-width: 120px;
-  padding: 12px 20px;
+  padding: 12px 24px;
   border-radius: 10px;
   border: 2px solid var(--border);
   background-color: transparent;
   color: var(--text-main);
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
 }
 
 .cancelBtn:hover {
-  background-color: var(--bg-page);
-  border-color: var(--text-muted);
+  background: rgba(255, 0, 110, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
 }
 
 .error {
-  color: #dc2626;
-  margin-top: 12px;
+  color: var(--accent);
+  margin-top: 16px;
   font-weight: 600;
-  padding: 12px;
-  background: #fee2e2;
-  border-radius: 8px;
-  border: 1px solid #fecaca;
+  padding: 14px 16px;
+  background: rgba(255, 0, 110, 0.1);
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 15px rgba(255, 0, 110, 0.25);
+  position: relative;
+  padding-left: 44px;
+  font-size: 0.9rem;
+}
+
+.error::before {
+  content: "⚠";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3rem;
 }
 
 .success {
-  margin-top: 20px;
-  padding: 16px;
-  background-color: #f0fdf4;
-  border: 1px solid #86efac;
+  margin-top: 16px;
+  padding: 16px 18px;
+  background: rgba(57, 255, 20, 0.1);
+  border: 1px solid var(--tertiary);
   border-radius: 10px;
-  text-align: center;
   font-weight: 600;
-  color: #166534;
+  color: var(--tertiary);
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.confirmBtn {
+.success p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.success p::before {
+  content: "✓";
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.success button {
   width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 12px 24px;
+  background: var(--gradient-primary);
+  color: var(--secondary);
+  border: 1px solid var(--primary);
+  border-radius: 10px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.confirmBtn:hover {
+.success button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.success button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.success button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.6);
 }
 
 .inputGroup {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
 }
 
-.label {
+.inputGroup label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inputGroup label::before {
+  content: "▸";
+  color: var(--primary);
   font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin-left: 2px;
 }
 
 .dateTimeRow {
@@ -109,24 +293,63 @@
   flex-wrap: nowrap;
   gap: 12px;
   width: 100%;
-  margin-bottom: 16px;
 }
 
-.dateTimeRow input {
-  padding: 12px;
+.dateTimeRow > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dateTimeRow label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dateTimeRow label::before {
+  content: "▸";
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.dateTimeRow input,
+.inputGroup input,
+.inputGroup select,
+.inputGroup textarea {
+  padding: 12px 14px;
   border: 2px solid var(--border);
-  border-radius: 8px;
-  background-color: white;
+  border-radius: 10px;
+  background: rgba(10, 14, 39, 0.8);
   color: var(--text-main);
   width: 100%;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  font-family: inherit;
 }
 
-.dateTimeRow input:focus {
+.dateTimeRow input::placeholder,
+.inputGroup input::placeholder,
+.inputGroup textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.dateTimeRow input:focus,
+.inputGroup input:focus,
+.inputGroup select:focus,
+.inputGroup textarea:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.15),
+    0 0 20px rgba(0, 240, 255, 0.3);
+  background: rgba(10, 14, 39, 0.95);
 }
 
 .fileUploadRow {
@@ -142,22 +365,43 @@
 
 .fileInput {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 16px;
+  border-radius: 10px;
   border: 2px dashed var(--border);
-  background-color: var(--bg-page);
+  background: rgba(0, 240, 255, 0.05);
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
+  text-align: center;
+  position: relative;
+}
+
+.fileInput::before {
+  content: "📎";
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  opacity: 0.6;
 }
 
 .fileInput:hover {
-  border-color: var(--accent);
-  background-color: rgba(59, 130, 246, 0.05);
+  border-color: var(--primary);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+  border-style: solid;
 }
 
 .fileName {
   font-size: 0.85rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  color: var(--primary);
+  font-weight: 600;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fileName::before {
+  content: "📄";
+  font-size: 1rem;
 }

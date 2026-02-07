@@ -6,7 +6,13 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
 }
@@ -16,6 +22,29 @@ body {
   background-color: var(--bg-page) !important;
   color: var(--text-main);
   line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Custom Neon Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--primary), var(--accent));
+  border-radius: 10px;
+  border: 2px solid var(--secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--primary-hover), var(--accent));
+  box-shadow: var(--glow-cyan);
 }
 
 /* Global button reset for the theme */
@@ -25,8 +54,28 @@ button {
   transition: var(--transition);
 }
 
-input:focus {
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  box-shadow: var(--glow-cyan);
+}
+
+/* Enhanced Input Focus States */
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  border-color: var(--primary) !important;
+  box-shadow: var(--glow-cyan) !important;
+}
+
+/* Selection Styling */
+::selection {
+  background-color: var(--primary);
+  color: var(--secondary);
+}
+
+::-moz-selection {
+  background-color: var(--primary);
+  color: var(--secondary);
 }
