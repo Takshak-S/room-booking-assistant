@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import AuthCallback from "./auth/AuthCallback";
 import Home from "./pages/Home";
@@ -15,7 +14,6 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/complete-form/student" element={<StudentProfileForm />} />
         <Route path="/complete-form/faculty" element={<FacultyProfileForm />} />
-        <Route path="/setup-profile" element={<ProfileSetup />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
