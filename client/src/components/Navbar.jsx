@@ -1,28 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import supabase from "../config/supabase";
 import styles from "./Navbar.module.css";
+
+const API_BASE = "http://localhost:5000";
 
 function Navbar() {
   const navigate = useNavigate();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  const handleLogout = () => {
+  const [me, setMe] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfile() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token;
+
+        if (!token) {
+          if (!cancelled) {
+            setMe(null);
+            setLoading(false);
+          }
+          return;
+        }
+
+        const res = await fetch(`${API_BASE}/api/profile/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+
+        if (!res.ok) {
+          if (!cancelled) {
+            setMe(null);
+            setLoading(false);
+          }
+          return;
+        }
+
+        const profile = await res.json();
+        console.log(profile)
+
+        if (!cancelled) {
+          setMe(profile);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setMe(null);
+          setLoading(false);
+        }
+      }
+    }
+    
+
+    loadProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setMe(null);
     navigate("/");
   };
 
-  const firstLetter = "S";
+  const role = me?.role ?? "";
+  const name = me?.name ?? "";
+  const firstLetter = name ? name[0].toUpperCase() : "?";
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.userInfo}>
         <div className={styles.userContainer}>
-          <span className={styles.roleBadge}>STUDENT</span>
-          <span className={styles.userName}>SHRISH</span>
+          {loading ? (
+            <>
+              <span className={styles.roleBadge}>…</span>
+              <span className={styles.userName}>…</span>
+            </>
+          ) : (
+            <>
+              <span className={styles.roleBadge}>
+                {role ? role.toUpperCase() : "—"}
+              </span>
+              <span className={styles.userName}>{name || "—"}</span>
+            </>
+          )}
         </div>
       </div>
-      
+
       <div className={styles.actions}>
-        <button className={styles.homeBtn} onClick={() => navigate("/home")}>
+        <button
+          className={styles.homeBtn}
+          onClick={() => navigate("/home")}
+        >
           Home
         </button>
 
@@ -37,32 +115,38 @@ function Navbar() {
           {isDropdownOpen && (
             <div className={styles.profileDropdown}>
               <div className={styles.profileDetails}>
-                <div className={styles.profileName}>{profile?.name}</div>
-                <div className={styles.profileRole}>
-                  {profile?.role}
-                </div>
-                {profile?.registrationNumber && (
+                <div className={styles.profileName}>{name || "—"}</div>
+                <div className={styles.profileRole}>{role || "—"}</div>
+
+                {me?.register_number && (
                   <div className={styles.profileMeta}>
-                    Reg No: {profile.registrationNumber}
+                    Reg No: {me.register_number}
                   </div>
                 )}
-                {profile?.employeeId && (
+
+                {me?.employee_id && (
                   <div className={styles.profileMeta}>
-                    Employee ID: {profile.employeeId}
+                    Employee ID: {me.employeeId}
                   </div>
                 )}
-                {profile?.school && (
+
+                {me?.school && (
                   <div className={styles.profileMeta}>
-                    School: {profile.school}
+                    School: {me.school}
                   </div>
                 )}
-                {profile?.mobileNumber && (
+
+                {me?.mobile_number && (
                   <div className={styles.profileMeta}>
-                    Mobile: {profile.mobileNumber}
+                    Mobile: {me.mobile_number}
                   </div>
                 )}
               </div>
-              <button className={styles.dropdownLogoutBtn} onClick={handleLogout}>
+
+              <button
+                className={styles.dropdownLogoutBtn}
+                onClick={handleLogout}
+              >
                 Logout
               </button>
             </div>

@@ -28,17 +28,20 @@ function StudentProfileForm() {
                 },
                 body:JSON.stringify(bodyData)    
             }).then(res=>res.json());
-            if(response.success===true){
+            if (response.success === true) {
+              localStorage.setItem(
+                "userProfile",
+                JSON.stringify({
+                  name,
+                  role: "STUDENT",
+                  registrationNumber,
+                  mobileNumber,
+                })
+              );
               navigate("/home");
-            }
-            else{
+            } else {
               navigate("/");
             }
-            
-
-    // TODO: Call backend API to mark profile_completed = true for the user
-
-    
   };
 
   return (

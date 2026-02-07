@@ -19,6 +19,10 @@ app.use("/api", profileRoutes);
 app.use("/api", adminClubsRoutes);
 app.use("/api", bookingRoutes);
 
+app.get('/api/test',(req,res)=>{
+  res.json({ok:true});
+})
+
 app.get("/", (req, res) => {
   res.send("Backend running");
 });

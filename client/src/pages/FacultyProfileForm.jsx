@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
+import supabase from "../config/supabase";
 
 function FacultyProfileForm() {
   const navigate = useNavigate();
@@ -9,24 +10,47 @@ function FacultyProfileForm() {
   const [school, setSchool] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Store basic profile info locally for navbar / UI usage
-    localStorage.setItem(
-      "userProfile",
-      JSON.stringify({
-        role: "Faculty",
-        employeeId,
-        name,
-        school,
-        mobileNumber,
-      })
-    );
-
-    // TODO: Call backend API to mark profile_completed = true for the user
-
-    navigate("/home");
+    try {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        navigate("/");
+        return;
+      }
+      const res = await fetch("http://localhost:5000/api/profile/faculty", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          employee_id: employeeId,
+          school,
+          mobile_number: mobileNumber,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        localStorage.setItem(
+          "userProfile",
+          JSON.stringify({
+            name,
+            role: "FACULTY",
+            employeeId,
+            school,
+            mobileNumber,
+          })
+        );
+        navigate("/home");
+      } else {
+        navigate("/");
+      }
+    } catch {
+      navigate("/");
+    }
   };
 
   return (
