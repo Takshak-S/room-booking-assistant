@@ -17,6 +17,24 @@ function Navbar() {
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
+  function isUpcoming(endTime) {
+    return new Date(endTime) > new Date();
+  }
+
+  async function cancelBooking(id) {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+
+    await fetch(`${API_BASE}/api/bookings/${id}/cancel`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    loadHistory(); // refresh
+  }
+
   /* -----------------------------
      LOAD PROFILE (/api/profile/me)
   ----------------------------- */
@@ -90,6 +108,7 @@ function Navbar() {
       if (res.ok) {
         const bookings = await res.json();
         setHistory(bookings);
+        console.log(bookings);
       } else {
         setHistory([]);
       }
@@ -136,10 +155,7 @@ function Navbar() {
         </div>
 
         <div className={styles.actions}>
-          <button
-            className={styles.homeBtn}
-            onClick={() => navigate("/home")}
-          >
+          <button className={styles.homeBtn} onClick={() => navigate("/home")}>
             Home
           </button>
 
@@ -228,42 +244,50 @@ function Navbar() {
 
               {!historyLoading &&
                 history.map((b) => {
-                  const start = new Date(b.start_time);
-                  const end = new Date(b.end_time);
-                  const isPast = end < new Date();
+                  const upcoming = isUpcoming(b.end_time);
 
                   return (
                     <div key={b.id} className={styles.historyItem}>
                       <strong>{b.resources?.name}</strong>
 
                       <p>
-                        {start.toLocaleDateString()} |{" "}
-                        {start.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}{" "}
-                        –{" "}
-                        {end.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {new Date(b.start_time).toLocaleString()} –{" "}
+                        {new Date(b.end_time).toLocaleTimeString()}
                       </p>
 
                       <div className={styles.historyTags}>
                         <span
                           className={
-                            isPast
-                              ? styles.pastTag
-                              : styles.upcomingTag
+                            upcoming ? styles.upcomingTag : styles.pastTag
                           }
                         >
-                          {isPast ? "Past" : "Upcoming"}
+                          {upcoming ? "Upcoming" : "Past"}
                         </span>
 
-                        <span className={styles.statusTag}>
-                          {b.status}
-                        </span>
+                        <span className={styles.statusTag}>{b.status}</span>
                       </div>
+
+                      {/* ACTIONS */}
+                      {upcoming && (
+                        <div className={styles.historyActions}>
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => {
+                              // You already have BookingForm modal in Dashboard
+                              navigate(`/edit-booking/${b.id}`);
+                            }}
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            className={styles.cancelBtn}
+                            onClick={() => cancelBooking(b.id)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}

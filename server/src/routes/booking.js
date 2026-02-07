@@ -198,4 +198,74 @@ router.post(
   },
 );
 
+router.post("/bookings/:id/cancel", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+
+  const { data: booking } = await supabase
+    .from("bookings")
+    .select("*")
+    .eq("id", id)
+    .eq("created_by_user_id", userId)
+    .single();
+
+  if (!booking) {
+    return res.status(404).json({ error: "Booking not found" });
+  }
+
+  if (new Date(booking.end_time) <= new Date()) {
+    return res.status(400).json({ error: "Cannot cancel past booking" });
+  }
+
+  await supabase.from("bookings").update({ status: "CANCELLED" }).eq("id", id);
+
+  await supabase.from("booking_events").insert({
+    booking_id: id,
+    event_type: "CANCELLED",
+    created_by: userId,
+  });
+
+  res.json({ success: true });
+});
+
+router.put("/bookings/:id", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+  const { start_time, end_time, resource_id } = req.body;
+
+  const { data: booking } = await supabase
+    .from("bookings")
+    .select("*")
+    .eq("id", id)
+    .eq("created_by_user_id", userId)
+    .single();
+
+  if (!booking) {
+    return res.status(404).json({ error: "Booking not found" });
+  }
+
+  if (new Date(booking.end_time) <= new Date()) {
+    return res.status(400).json({ error: "Cannot edit past booking" });
+  }
+
+  await supabase
+    .from("bookings")
+    .update({
+      start_time,
+      end_time,
+      resource_id,
+      status: "PENDING_APPROVAL",
+    })
+    .eq("id", id);
+
+  await supabase.from("booking_events").insert({
+    booking_id: id,
+    event_type: "TIME_CHANGED",
+    created_by: userId,
+    metadata: { start_time, end_time, resource_id },
+  });
+
+  res.json({ success: true });
+});
+
 export default router;
