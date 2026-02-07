@@ -21,6 +21,7 @@ function Dashboard() {
   const [editingBooking, setEditingBooking] = useState(null);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
+    type: "",
     capacity: "",
     date: "",
     startTime: "",
