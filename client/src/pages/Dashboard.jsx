@@ -116,38 +116,37 @@ function Dashboard() {
         </div>
       )}
 
-      {/* SECTION 3: SUMMARY */}
-      {myBookings.length > 0 && (
+      {/* SECTION 3: UPCOMING SCHEDULES */}
+      {myBookings.filter(isUpcoming).length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionHeader}>Your Recent Bookings</h2>
+          <h2 className={styles.sectionHeader}>Upcoming Schedules</h2>
+
           <div className={styles.resourceGrid}>
-            {myBookings.map((b) => {
-              const upcoming = isUpcoming(b);
-              return (
-                <div key={b.id} className={styles.card}>
-                  <strong>{b.resourceName}</strong>
-                  <p style={{ color: "var(--text-muted)" }}>
-                    {b.date} | {b.startTime} - {b.endTime}
-                  </p>
-                  {upcoming && (
-                    <div className={styles.bookingActions}>
-                      <button
-                        className={styles.bookingActionBtn}
-                        onClick={() => handleEditBooking(b)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={styles.bookingActionBtnDanger}
-                        onClick={() => handleCancelBooking(b.id)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
+            {myBookings.filter(isUpcoming).map((b) => (
+              <div key={b.id} className={styles.card}>
+                <strong>{b.resourceName}</strong>
+
+                <p style={{ color: "var(--text-muted)" }}>
+                  {b.date} | {b.startTime} – {b.endTime}
+                </p>
+
+                <div className={styles.bookingActions}>
+                  <button
+                    className={styles.bookingActionBtn}
+                    onClick={() => handleEditBooking(b)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className={styles.bookingActionBtnDanger}
+                    onClick={() => handleCancelBooking(b.id)}
+                  >
+                    Cancel
+                  </button>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </section>
       )}

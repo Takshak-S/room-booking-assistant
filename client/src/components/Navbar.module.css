@@ -5,16 +5,17 @@
   padding: 0.85rem 1.5rem;
   background-color: var(--secondary);
   color: white;
-  
+
   /* FIXED POSITIONING */
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000; /* Ensures it stays above all content */
-  
+  z-index: 1000;
+  /* Ensures it stays above all content */
+
   /* Optional: Remove the border-radius when fixed to look like a standard header */
-  border-radius: 0; 
+  border-radius: 0;
   box-shadow: var(--shadow-sm);
   border-bottom: 3px solid var(--accent);
 }
@@ -63,7 +64,7 @@
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 600;
- }
+}
 
 .profileWrapper {
   position: relative;
@@ -118,6 +119,23 @@
   margin-top: 2px;
 }
 
+.dropdownActionBtn {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  color: var(--text-main);
+  padding: 8px 14px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.dropdownActionBtn:hover {
+  background-color: var(--bg-page);
+}
+
 .dropdownLogoutBtn {
   width: 100%;
   border: none;
@@ -128,4 +146,121 @@
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
+}
+
+/* Booking History Modal */
+.historyOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.historyModal {
+  width: 100%;
+  max-width: 640px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: 24px 24px 28px 24px;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.historyHeader h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.historyHeader h3::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background-color: var(--accent);
+  border-radius: 2px;
+}
+
+.modalCloseBtn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.modalCloseBtn:hover {
+  color: var(--text-main);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.historyItem {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.historyItem:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.historyItem strong {
+  font-size: 1rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.historyItem p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.pastTag,
+.upcomingTag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+.pastTag {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.upcomingTag {
+  background-color: #dcfce7;
+  color: #16a34a;
 }
