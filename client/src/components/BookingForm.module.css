@@ -4,72 +4,101 @@
 
 .submitBtn {
   min-width: 160px;
-  padding: 12px;
-  background-color: var(--secondary);
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
-  /* Specific change to lower the button */
-  margin-top: 15px; 
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .submitBtn:hover {
-  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
 }
 
 .actionsRow {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: 20px;
   justify-content: flex-start;
   flex-wrap: wrap;
 }
 
 .cancelBtn {
   min-width: 120px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
   background-color: transparent;
   color: var(--text-main);
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.cancelBtn:hover {
+  background-color: var(--bg-page);
+  border-color: var(--text-muted);
 }
 
 .error {
-  color: var(--error);
-  margin-top: 10px;
-  font-weight: 500;
+  color: #dc2626;
+  margin-top: 12px;
+  font-weight: 600;
+  padding: 12px;
+  background: #fee2e2;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
 }
 
 .success {
-  margin-top: 15px;
-  padding: 15px;
+  margin-top: 20px;
+  padding: 16px;
   background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: var(--radius);
+  border: 1px solid #86efac;
+  border-radius: 10px;
   text-align: center;
+  font-weight: 600;
+  color: #166534;
 }
 
 .confirmBtn {
   width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  background-color: var(--primary);
+  margin-top: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
+
+.confirmBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
 .inputGroup {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Space between label and input */
-  flex: 1;  /* Makes all three inputs equal width */
+  gap: 6px;
+  flex: 1;
 }
 
 .label {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-main);
   margin-left: 2px;
@@ -78,25 +107,33 @@
 .dateTimeRow {
   display: flex;
   flex-wrap: nowrap;
-  gap: 12px; 
+  gap: 12px;
   width: 100%;
-  margin-bottom: 15px; /* Space before the button */
+  margin-bottom: 16px;
 }
 
 .dateTimeRow input {
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background-color: #333; /* Matches your dark theme from images */
-  color: white;
+  padding: 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background-color: white;
+  color: var(--text-main);
   width: 100%;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.dateTimeRow input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .fileUploadRow {
-  margin-top: 12px;
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .fileInputWrapper {
@@ -105,15 +142,22 @@
 
 .fileInput {
   width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px dashed var(--border);
-  background-color: #333;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px dashed var(--border);
+  background-color: var(--bg-page);
   color: var(--text-muted);
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fileInput:hover {
+  border-color: var(--accent);
+  background-color: rgba(59, 130, 246, 0.05);
 }
 
 .fileName {
   font-size: 0.85rem;
   color: var(--text-muted);
+  font-weight: 500;
 }

@@ -63,22 +63,24 @@ function Dashboard() {
   return (
     <div className={styles.mainWrapper}>
       <Navbar />
-      
+
       {/* SECTION 1: RESOURCE SELECTION */}
       <section className={styles.section}>
-        <h2 className={styles.sectionHeader}>Select a Facility</h2>
-        <ResourceSearchFilter
-          search={search}
-          onSearchChange={setSearch}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
+        <div>
+          <h2 className={styles.sectionHeader}>Select a Facility</h2>
+          <ResourceSearchFilter
+            search={search}
+            onSearchChange={setSearch}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+          />
 
-        <ResourceList
-          resources={resources} // filtering later
-          onSelect={setSelectedResource}
-          selectedId={selectedResource?.id}
-        />
+          <ResourceList
+            resources={resources} // filtering later
+            onSelect={setSelectedResource}
+            selectedId={selectedResource?.id}
+          />
+        </div>
       </section>
 
       {/* SECTION 2: BOOKING FORM (Modal popup) */}
@@ -102,8 +104,8 @@ function Dashboard() {
               </button>
             </div>
             <div className={styles.formWidthLimit}>
-              <BookingForm 
-                resource={selectedResource} 
+              <BookingForm
+                resource={selectedResource}
                 onBookingConfirmed={handleBookingConfirmed}
                 initialBooking={editingBooking}
                 onCancelEdit={() => {
@@ -119,34 +121,36 @@ function Dashboard() {
       {/* SECTION 3: UPCOMING SCHEDULES */}
       {myBookings.filter(isUpcoming).length > 0 && (
         <section className={styles.section}>
-          <h2 className={styles.sectionHeader}>Upcoming Schedules</h2>
+          <div>
+            <h2 className={styles.sectionHeader}>Upcoming Schedules</h2>
 
-          <div className={styles.resourceGrid}>
-            {myBookings.filter(isUpcoming).map((b) => (
-              <div key={b.id} className={styles.card}>
-                <strong>{b.resourceName}</strong>
+            <div className={styles.resourceGrid}>
+              {myBookings.filter(isUpcoming).map((b) => (
+                <div key={b.id} className={styles.card}>
+                  <strong>{b.resourceName}</strong>
 
-                <p style={{ color: "var(--text-muted)" }}>
-                  {b.date} | {b.startTime} – {b.endTime}
-                </p>
+                  <p style={{ color: "var(--text-muted)" }}>
+                    {b.date} | {b.startTime} – {b.endTime}
+                  </p>
 
-                <div className={styles.bookingActions}>
-                  <button
-                    className={styles.bookingActionBtn}
-                    onClick={() => handleEditBooking(b)}
-                  >
-                    Edit
-                  </button>
+                  <div className={styles.bookingActions}>
+                    <button
+                      className={styles.bookingActionBtn}
+                      onClick={() => handleEditBooking(b)}
+                    >
+                      Edit
+                    </button>
 
-                  <button
-                    className={styles.bookingActionBtnDanger}
-                    onClick={() => handleCancelBooking(b.id)}
-                  >
-                    Cancel
-                  </button>
+                    <button
+                      className={styles.bookingActionBtnDanger}
+                      onClick={() => handleCancelBooking(b.id)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
       )}
