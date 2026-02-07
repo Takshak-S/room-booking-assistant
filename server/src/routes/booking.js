@@ -35,8 +35,7 @@ response:
 */
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
-
+const upload = multer();
 router.post(
   "/bookings",
   requireAuth,
@@ -44,22 +43,12 @@ router.post(
   async (req, res) => {
     const userId = req.user.id;
 
-    const {
-      acting_as_type,
-      club_id,
-      resource_id,
-      start_time,
-      end_time,
-      purpose,
-    } = req.body;
-
+    const { resource_id, start_time, end_time, purpose } = req.body;
     const file = req.file;
-
-    if (!file) {
-      return res.status(400).json({ error: "Event proof document required" });
-    }
-
-    if (!acting_as_type || !resource_id || !start_time || !end_time) {
+    console.log(file);
+    console.log(req.body);
+    /* ---------- BASIC VALIDATION ---------- */
+    if (!resource_id || !start_time || !end_time) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -67,49 +56,45 @@ router.post(
       return res.status(400).json({ error: "Invalid time range" });
     }
 
-    /* ---------- VERIFY USER ROLE ---------- */
-    const { data: user } = await supabase
+    /* ---------- GET USER ROLE (/api/me SOURCE) ---------- */
+    const { data: user, error: userErr } = await supabase
       .from("users")
       .select("role")
       .eq("id", userId)
       .single();
 
-    if (!user) {
+    if (userErr || !user) {
       return res.status(401).json({ error: "User not found" });
     }
 
-    let actingAsId;
+    let acting_as_type;
+    let acting_as_id;
 
-    /* ---------- FACULTY BOOKING ---------- */
-    if (acting_as_type === "FACULTY") {
-      if (user.role !== "FACULTY") {
-        return res.status(403).json({ error: "Not a faculty account" });
-      }
-      actingAsId = userId;
-    } else if (acting_as_type === "CLUB") {
-      /* ---------- CLUB BOOKING ---------- */
-      if (!club_id) {
-        return res.status(400).json({ error: "club_id required" });
-      }
+    /* ---------- FACULTY FLOW ---------- */
+    if (user.role === "FACULTY") {
+      acting_as_type = "FACULTY";
+      acting_as_id = userId;
+    }
 
-      const { data: membership } = await supabase
+    /* ---------- STUDENT → CLUB FLOW ---------- */
+    if (user.role === "STUDENT") {
+      const { data: clubMember } = await supabase
         .from("club_members")
-        .select("id")
+        .select("club_id")
         .eq("user_id", userId)
-        .eq("club_id", club_id)
         .eq("role", "BOARD")
         .eq("is_active", true)
+        .limit(1)
         .single();
 
-      if (!membership) {
+      if (!clubMember) {
         return res.status(403).json({
-          error: "Not authorized to book for this club",
+          error: "Student is not authorized to book for any club",
         });
       }
 
-      actingAsId = club_id;
-    } else {
-      return res.status(400).json({ error: "Invalid acting_as_type" });
+      acting_as_type = "CLUB";
+      acting_as_id = clubMember.club_id;
     }
 
     /* ---------- CREATE BOOKING ---------- */
@@ -119,7 +104,7 @@ router.post(
         resource_id,
         created_by_user_id: userId,
         acting_as_type,
-        acting_as_id: actingAsId,
+        acting_as_id,
         start_time,
         end_time,
         purpose,
@@ -129,38 +114,40 @@ router.post(
       .single();
 
     if (bookingError) {
-      // conflict will be caught here by DB constraint
       return res.status(409).json({
         error: "Time slot already booked or pending approval",
       });
     }
 
-    /* ---------- UPLOAD DOCUMENT ---------- */
-    const filePath = `${booking.id}/${file.originalname}`;
+    /* ---------- OPTIONAL DOCUMENT UPLOAD ---------- */
+    let fileUrl = null;
 
-    const { error: uploadError } = await supabase.storage
-      .from("booking-documents")
-      .upload(filePath, file.buffer, {
-        contentType: file.mimetype,
-        upsert: false,
+    if (file) {
+      const filePath = `${booking.id}/${file.originalname}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("booking-documents")
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        // rollback booking if document upload fails
+        await supabase.from("bookings").delete().eq("id", booking.id);
+        return res.status(500).json({ error: "Document upload failed" });
+      }
+
+      fileUrl = `booking-documents/${filePath}`;
+
+      await supabase.from("booking_documents").insert({
+        booking_id: booking.id,
+        file_url: fileUrl,
+        uploaded_by: userId,
       });
-
-    if (uploadError) {
-      // clean up booking if file upload fails
-      await supabase.from("bookings").delete().eq("id", booking.id);
-      return res.status(500).json({ error: "Document upload failed" });
     }
 
-    const fileUrl = `booking-documents/${filePath}`;
-
-    /* ---------- SAVE DOCUMENT RECORD ---------- */
-    await supabase.from("booking_documents").insert({
-      booking_id: booking.id,
-      file_url: fileUrl,
-      uploaded_by: userId,
-    });
-
-    /* ---------- HISTORY EVENT ---------- */
+    /* ---------- BOOKING EVENT (AUDIT) ---------- */
     await supabase.from("booking_events").insert({
       booking_id: booking.id,
       event_type: "SUBMITTED",
@@ -168,9 +155,11 @@ router.post(
       metadata: {
         acting_as_type,
         acting_as_id,
+        has_document: Boolean(file),
       },
     });
 
+    /* ---------- RESPONSE ---------- */
     res.json({
       success: true,
       booking_id: booking.id,
