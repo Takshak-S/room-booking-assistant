@@ -36,6 +36,36 @@ response:
 
 const router = express.Router();
 const upload = multer();
+
+router.get("/bookings/history", requireAuth, async (req, res) => {
+  const userId = req.user.id;
+
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(
+      `
+      id,
+      start_time,
+      end_time,
+      status,
+      purpose,
+      resources (
+        id,
+        name,
+        type
+      )
+    `,
+    )
+    .eq("created_by_user_id", userId)
+    .order("start_time", { ascending: false });
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+  res.json(data);
+});
+
 router.post(
   "/bookings",
   requireAuth,

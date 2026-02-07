@@ -10,9 +10,16 @@ function Navbar() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+
   const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  /* -----------------------------
+     LOAD PROFILE (/api/profile/me)
+  ----------------------------- */
   useEffect(() => {
     let cancelled = false;
 
@@ -64,6 +71,38 @@ function Navbar() {
     };
   }, []);
 
+  /* -----------------------------
+     LOAD BOOKING HISTORY
+  ----------------------------- */
+  async function loadHistory() {
+    setHistoryLoading(true);
+
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/bookings/history`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        const bookings = await res.json();
+        setHistory(bookings);
+      } else {
+        setHistory([]);
+      }
+    } catch {
+      setHistory([]);
+    }
+
+    setHistoryLoading(false);
+  }
+
+  /* -----------------------------
+     LOGOUT
+  ----------------------------- */
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setMe(null);
@@ -143,12 +182,12 @@ function Navbar() {
                   )}
                 </div>
 
-                {/* NEW: Booking History */}
                 <button
                   className={styles.dropdownActionBtn}
                   onClick={() => {
                     setShowHistory(true);
                     setIsDropdownOpen(false);
+                    loadHistory();
                   }}
                 >
                   Booking History
@@ -166,12 +205,12 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* BOOKING HISTORY MODAL (UI ONLY) */}
+      {/* BOOKING HISTORY MODAL */}
       {showHistory && (
         <div className={styles.historyOverlay}>
           <div className={styles.historyModal}>
             <div className={styles.historyHeader}>
-              <h3>Booking History</h3>
+              <h3>My Booking History</h3>
               <button
                 className={styles.modalCloseBtn}
                 onClick={() => setShowHistory(false)}
@@ -181,24 +220,53 @@ function Navbar() {
             </div>
 
             <div className={styles.historyList}>
-              {/* MOCK DATA — backend later */}
-              <div className={styles.historyItem}>
-                <strong>Classroom A</strong>
-                <p>2024-03-12 | 10:00 – 12:00</p>
-                <span className={styles.pastTag}>Past</span>
-              </div>
+              {historyLoading && <p>Loading…</p>}
 
-              <div className={styles.historyItem}>
-                <strong>Lab 3</strong>
-                <p>2024-04-02 | 14:00 – 16:00</p>
-                <span className={styles.upcomingTag}>Upcoming</span>
-              </div>
+              {!historyLoading && history.length === 0 && (
+                <p>No bookings yet.</p>
+              )}
 
-              <div className={styles.historyItem}>
-                <strong>Seminar Hall</strong>
-                <p>2024-04-15 | 09:00 – 11:00</p>
-                <span className={styles.upcomingTag}>Upcoming</span>
-              </div>
+              {!historyLoading &&
+                history.map((b) => {
+                  const start = new Date(b.start_time);
+                  const end = new Date(b.end_time);
+                  const isPast = end < new Date();
+
+                  return (
+                    <div key={b.id} className={styles.historyItem}>
+                      <strong>{b.resources?.name}</strong>
+
+                      <p>
+                        {start.toLocaleDateString()} |{" "}
+                        {start.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        –{" "}
+                        {end.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+
+                      <div className={styles.historyTags}>
+                        <span
+                          className={
+                            isPast
+                              ? styles.pastTag
+                              : styles.upcomingTag
+                          }
+                        >
+                          {isPast ? "Past" : "Upcoming"}
+                        </span>
+
+                        <span className={styles.statusTag}>
+                          {b.status}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>
