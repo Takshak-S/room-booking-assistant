@@ -5,6 +5,8 @@ import ResourceList from "../components/ResourceList";
 import BookingForm from "../components/BookingForm";
 import resources from "../data/resources";
 import styles from "./Dashboard.module.css";
+import ResourceSearchFilter from "../components/ResourceSearchFilter";
+
 
 function isUpcoming(booking) {
   // Consider a booking editable/cancellable if its start time is in the future
@@ -17,6 +19,23 @@ function Dashboard() {
   const [selectedResource, setSelectedResource] = useState(null);
   const [myBookings, setMyBookings] = useState([]);
   const [editingBooking, setEditingBooking] = useState(null);
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({
+    capacity: "",
+    date: "",
+    startTime: "",
+    endTime: "",
+    location: "",
+    hasAC: false,
+    hasProjector: false,
+    isActive: true,
+  });
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+
 
   const handleBookingConfirmed = (newBooking) => {
     setMyBookings((prev) => {
@@ -47,9 +66,16 @@ function Dashboard() {
       {/* SECTION 1: RESOURCE SELECTION */}
       <section className={styles.section}>
         <h2 className={styles.sectionHeader}>Select a Facility</h2>
-        <ResourceList 
-          resources={resources} 
-          onSelect={setSelectedResource} 
+        <ResourceSearchFilter
+          search={search}
+          onSearchChange={setSearch}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
+
+        <ResourceList
+          resources={resources} // filtering later
+          onSelect={setSelectedResource}
           selectedId={selectedResource?.id}
         />
       </section>
