@@ -314,4 +314,68 @@
     .benefitsList {
         grid-template-columns: 1fr;
     }
+
+    .featureCard {
+        padding: 24px 20px;
+    }
+
+    .ctaButton {
+        padding: 14px 32px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 50px 12px 30px;
+    }
+
+    .heroSection {
+        padding: 30px 0 50px;
+    }
+
+    .heroIcon {
+        font-size: 3rem;
+    }
+
+    .heroTitle {
+        font-size: 1.8rem;
+    }
+
+    .heroSubtitle {
+        font-size: 1rem;
+    }
+
+    .ctaButton {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.6rem;
+    }
+
+    .featureCard {
+        padding: 20px 16px;
+    }
+
+    .featureIcon {
+        font-size: 2.5rem;
+    }
+
+    .featureTitle {
+        font-size: 1.1rem;
+    }
+
+    .benefitsSection {
+        padding: 28px 20px;
+    }
+
+    .benefitsTitle {
+        font-size: 1.6rem;
+    }
+
+    .benefitItem {
+        padding: 12px;
+    }
 }

@@ -255,6 +255,155 @@
   width: fit-content;
 }
 
+
+.profileRole {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.profileMeta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.dropdownActionBtn {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  color: var(--text-main);
+  padding: 8px 14px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.dropdownActionBtn:hover {
+  background-color: var(--bg-page);
+}
+
+.dropdownLogoutBtn {
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  color: #ef4444;
+  padding: 8px 14px 4px 14px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Booking History Modal */
+.historyOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.historyModal {
+  width: 100%;
+  max-width: 640px;
+  background-color: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: 24px 24px 28px 24px;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.historyHeader h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.historyHeader h3::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background-color: var(--accent);
+  border-radius: 2px;
+}
+
+.modalCloseBtn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.modalCloseBtn:hover {
+  color: var(--text-main);
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.historyItem {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.historyItem:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.historyItem strong {
+  font-size: 1rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.historyItem p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.pastTag,
+.upcomingTag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+  width: fit-content;
+}
+
 .pastTag {
   background-color: #fee2e2;
   color: #dc2626;
@@ -263,4 +412,88 @@
 .upcomingTag {
   background-color: #dcfce7;
   color: #16a34a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .userContainer {
+    gap: 8px;
+  }
+
+  .roleBadge {
+    display: none;
+  }
+
+  .profileCircle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .profileDropdown {
+    right: -10px;
+    min-width: 200px;
+  }
+
+  .dropdownActionBtn {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+
+  .historyModal {
+    width: 95%;
+    max-width: none;
+    padding: 20px;
+    max-height: 85vh;
+  }
+
+  .historyHeader h2 {
+    font-size: 1.2rem;
+  }
+
+  .historyItem {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0 12px;
+  }
+
+  .logo {
+    font-size: 1.1rem;
+  }
+
+  .profileCircle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
+  }
+
+  .profileDropdown {
+    right: -5px;
+    min-width: 180px;
+  }
+
+  .profileName {
+    font-size: 0.9rem;
+  }
+
+  .profileRole,
+  .profileMeta {
+    font-size: 0.75rem;
+  }
+
+  .historyModal {
+    padding: 16px;
+  }
 }
