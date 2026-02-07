@@ -5,21 +5,19 @@ import styles from "./Navbar.module.css";
 function Navbar() {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const profile = JSON.parse(localStorage.getItem("userProfile"));
-
+  
   const handleLogout = () => {
-    localStorage.clear();
     navigate("/");
   };
 
-  const firstLetter = profile?.name?.[0]?.toUpperCase() || "?";
+  const firstLetter = "S";
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.userInfo}>
         <div className={styles.userContainer}>
-          <span className={styles.roleBadge}>{profile?.role?.toUpperCase()}</span>
-          <span className={styles.userName}>{profile?.name}</span>
+          <span className={styles.roleBadge}>STUDENT</span>
+          <span className={styles.userName}>SHRISH</span>
         </div>
       </div>
       
