@@ -39,7 +39,7 @@ function ResourceSearchFilter({
               type="text"
               placeholder="Classroom, Lab, Auditorium…"
               value={filters.type}
-              onChange={(e) => onFilterChange("type", e.target.value)}
+              onChange={(e) => onFilterChange("type", e.target.value.toUpperCase())}
             />
           </div>
 
@@ -47,8 +47,8 @@ function ResourceSearchFilter({
             <label>Minimum Capacity</label>
             <input
               type="number"
-              value={filters.capacity}
-              onChange={(e) => onFilterChange("capacity", e.target.value)}
+              value={filters.min_capacity}
+              onChange={(e) => onFilterChange("min_capacity", e.target.value)}
             />
           </div>
 
@@ -65,8 +65,8 @@ function ResourceSearchFilter({
             <label>Start Time</label>
             <input
               type="time"
-              value={filters.startTime}
-              onChange={(e) => onFilterChange("startTime", e.target.value)}
+              value={filters.start_time}
+              onChange={(e) => onFilterChange("start_time", e.target.value)}
             />
           </div>
 
@@ -74,18 +74,8 @@ function ResourceSearchFilter({
             <label>End Time</label>
             <input
               type="time"
-              value={filters.endTime}
-              onChange={(e) => onFilterChange("endTime", e.target.value)}
-            />
-          </div>
-
-          <div className={styles.filterGroup}>
-            <label>Location</label>
-            <input
-              type="text"
-              placeholder="Block / Floor"
-              value={filters.location}
-              onChange={(e) => onFilterChange("location", e.target.value)}
+              value={filters.end_time}
+              onChange={(e) => onFilterChange("end_time", e.target.value)}
             />
           </div>
 
@@ -93,10 +83,8 @@ function ResourceSearchFilter({
             <label>
               <input
                 type="checkbox"
-                checked={filters.hasAC}
-                onChange={(e) =>
-                  onFilterChange("hasAC", e.target.checked)
-                }
+                checked={filters.has_ac}
+                onChange={(e) => onFilterChange("has_ac", e.target.checked)}
               />
               Has AC
             </label>
@@ -104,23 +92,12 @@ function ResourceSearchFilter({
             <label>
               <input
                 type="checkbox"
-                checked={filters.hasProjector}
+                checked={filters.has_projector}
                 onChange={(e) =>
-                  onFilterChange("hasProjector", e.target.checked)
+                  onFilterChange("has_projector", e.target.checked)
                 }
               />
               Has Projector
-            </label>
-
-            <label>
-              <input
-                type="checkbox"
-                checked={filters.isActive}
-                onChange={(e) =>
-                  onFilterChange("isActive", e.target.checked)
-                }
-              />
-              Available (Not under maintenance)
             </label>
           </div>
         </div>

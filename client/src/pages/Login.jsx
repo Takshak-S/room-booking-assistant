@@ -1,15 +1,31 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import supabase from "../config/supabase";
+import { useEffect } from "react";
 
 function Login() {
-  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        navigate("/home");
+      }
+    };
+
+    checkSession();
+  });
+
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
-        redirectTo: "http://localhost:5173/auth/callback"
-      }
+        redirectTo: "http://localhost:5173/auth/callback",
+      },
     });
 
     if (error) console.error(error);

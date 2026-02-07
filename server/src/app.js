@@ -25,11 +25,11 @@ app.use("/api", bookingRoutes);
 app.use("/api", adminOverrideRoutes);
 app.use("/api", adminBookingsRoutes);
 app.use("/api", historyRoutes);
-app.use("/resources", resourceRoutes);
+app.use("/api", resourceRoutes);
 
-app.get('/api/test',(req,res)=>{
-  res.json({ok:true});
-})
+app.get("/api/test", (req, res) => {
+  res.json({ ok: true });
+});
 
 app.get("/", (req, res) => {
   res.send("Backend running");
