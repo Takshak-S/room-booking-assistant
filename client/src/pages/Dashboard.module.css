@@ -45,11 +45,6 @@
   z-index: 0;
 }
 
-.mainWrapper>* {
-  position: relative;
-  z-index: 1;
-}
-
 .section {
   max-width: 1200px;
   margin: 0 auto 40px;
