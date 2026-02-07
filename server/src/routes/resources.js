@@ -24,22 +24,6 @@ router.get("/resources", requireAuth, async (req, res) => {
   res.json(data);
 });
 
-router.get("/resources/:resourceId", requireAuth, async (req, res) => {
-  const { resourceId } = req.params;
-
-  const { data, error } = await supabase
-    .from("resources")
-    .select("*")
-    .eq("id", resourceId)
-    .single();
-
-  if (error || !data) {
-    return res.status(404).json({ error: "Resource not found" });
-  }
-
-  res.json(data);
-});
-
 router.get("/resources/availability", requireAuth, async (req, res) => {
   const { start_time, end_time, type, min_capacity, has_projector, has_ac } =
     req.query;
@@ -90,6 +74,22 @@ router.get("/resources/availability", requireAuth, async (req, res) => {
   const available = resources.filter((r) => !blockedIds.has(r.id));
 
   res.json(available);
+});
+
+router.get("/resources/:resourceId", requireAuth, async (req, res) => {
+  const { resourceId } = req.params;
+
+  const { data, error } = await supabase
+    .from("resources")
+    .select("*")
+    .eq("id", resourceId)
+    .single();
+
+  if (error || !data) {
+    return res.status(404).json({ error: "Resource not found" });
+  }
+
+  res.json(data);
 });
 
 router.post("/admin/resources", requireAuth, async (req, res) => {

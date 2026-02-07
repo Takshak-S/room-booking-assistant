@@ -5,7 +5,7 @@ import ResourceList from "../components/ResourceList";
 import BookingForm from "../components/BookingForm";
 import ResourceSearchFilter from "../components/ResourceSearchFilter";
 import styles from "./Dashboard.module.css";
-import supabase  from "../config/supabase";
+import supabase from "../config/supabase";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -56,22 +56,15 @@ function Dashboard() {
     if (filters.min_capacity)
       params.append("min_capacity", filters.min_capacity);
     if (filters.has_ac) params.append("has_ac", "true");
-    if (filters.has_projector)
-      params.append("has_projector", "true");
+    if (filters.has_projector) params.append("has_projector", "true");
 
     // time-based availability
     const hasTimeFilter =
       filters.date && filters.start_time && filters.end_time;
 
     if (hasTimeFilter) {
-      params.append(
-        "start_time",
-        `${filters.date}T${filters.start_time}:00`
-      );
-      params.append(
-        "end_time",
-        `${filters.date}T${filters.end_time}:00`
-      );
+      params.append("start_time", `${filters.date}T${filters.start_time}:00`);
+      params.append("end_time", `${filters.date}T${filters.end_time}:00`);
 
       baseUrl = `http://localhost:5000/api/resources/availability`;
     }
@@ -104,8 +97,8 @@ function Dashboard() {
     } else {
       setResources(
         allResources.filter((r) =>
-          r.name.toLowerCase().includes(search.toLowerCase())
-        )
+          r.name.toLowerCase().includes(search.toLowerCase()),
+        ),
       );
     }
   }, [search, allResources]);
