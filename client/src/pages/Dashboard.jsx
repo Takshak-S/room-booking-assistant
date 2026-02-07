@@ -18,12 +18,6 @@ function Dashboard() {
   const [myBookings, setMyBookings] = useState([]);
   const [editingBooking, setEditingBooking] = useState(null);
 
-  useEffect(() => {
-    // Require a completed profile (stored after student/faculty forms)
-    const profile = localStorage.getItem("userProfile");
-    if (!profile) navigate("/");
-  }, [navigate]);
-
   const handleBookingConfirmed = (newBooking) => {
     setMyBookings((prev) => {
       if (editingBooking) {
