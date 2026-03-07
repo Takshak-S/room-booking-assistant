@@ -1,5 +1,8 @@
 import { useState } from "react";
-import styles from "./ResourceSearchFilter.module.css";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SlidersHorizontal, X } from "lucide-react";
 
 function ResourceSearchFilter({
   search,
@@ -10,95 +13,74 @@ function ResourceSearchFilter({
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className={styles.wrapper}>
-      {/* Search + Filter Toggle */}
-      <div className={styles.topRow}>
-        <input
+    <div className="space-y-3">
+      {/* Search + toggle */}
+      <div className="flex gap-2">
+        <Input
           type="text"
           placeholder="Search facility by name…"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className={styles.searchInput}
+          className="flex-1"
         />
-
-        <button
-          type="button"
-          className={styles.filterToggleBtn}
-          onClick={() => setShowFilters((prev) => !prev)}
+        <Button
+          variant={showFilters ? "secondary" : "outline"}
+          size="icon"
+          onClick={() => setShowFilters((p) => !p)}
+          title={showFilters ? "Hide Filters" : "Show Filters"}
         >
-          {showFilters ? "Hide Filters" : "Filter"}
-        </button>
+          {showFilters ? (
+            <X className="h-4 w-4" />
+          ) : (
+            <SlidersHorizontal className="h-4 w-4" />
+          )}
+        </Button>
       </div>
 
-      {/* Filters Panel */}
+      {/* Filter panel */}
       {showFilters && (
-        <div className={styles.filtersPanel}>
-          <div className={styles.filterGroup}>
-            <label>Type</label>
-            <input
-              type="text"
-              placeholder="Classroom, Lab, Auditorium…"
+        <div className="grid gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Type</Label>
+            <Input
+              placeholder="Classroom, Lab…"
               value={filters.type}
-              onChange={(e) => onFilterChange("type", e.target.value.toUpperCase())}
+              onChange={(e) =>
+                onFilterChange("type", e.target.value.toUpperCase())
+              }
             />
           </div>
-
-          <div className={styles.filterGroup}>
-            <label>Minimum Capacity</label>
-            <input
+          <div className="space-y-1.5">
+            <Label className="text-xs">Min Capacity</Label>
+            <Input
               type="number"
               value={filters.min_capacity}
               onChange={(e) => onFilterChange("min_capacity", e.target.value)}
             />
           </div>
-
-          <div className={styles.filterGroup}>
-            <label>Date</label>
-            <input
+          <div className="space-y-1.5">
+            <Label className="text-xs">Date</Label>
+            <Input
               type="date"
               value={filters.date}
               onChange={(e) => onFilterChange("date", e.target.value)}
             />
           </div>
-
-          <div className={styles.filterGroup}>
-            <label>Start Time</label>
-            <input
+          <div className="space-y-1.5">
+            <Label className="text-xs">Start Time</Label>
+            <Input
               type="time"
               value={filters.start_time}
               onChange={(e) => onFilterChange("start_time", e.target.value)}
             />
           </div>
-
-          <div className={styles.filterGroup}>
-            <label>End Time</label>
-            <input
+          <div className="space-y-1.5">
+            <Label className="text-xs">End Time</Label>
+            <Input
               type="time"
               value={filters.end_time}
               onChange={(e) => onFilterChange("end_time", e.target.value)}
             />
-          </div>
-
-          <div className={styles.checkboxGroup}>
-            <label>
-              <input
-                type="checkbox"
-                checked={filters.has_ac}
-                onChange={(e) => onFilterChange("has_ac", e.target.checked)}
-              />
-              Has AC
-            </label>
-
-            <label>
-              <input
-                type="checkbox"
-                checked={filters.has_projector}
-                onChange={(e) =>
-                  onFilterChange("has_projector", e.target.checked)
-                }
-              />
-              Has Projector
-            </label>
           </div>
         </div>
       )}

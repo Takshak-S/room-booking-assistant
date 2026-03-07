@@ -1,11 +1,10 @@
-import supabase from "../lib/supabase.js";
-
-export default async function requireAdmin(userId) {
-  const { data } = await supabase
-    .from("users")
-    .select("is_admin")
-    .eq("id", userId)
-    .single();
-
-  return data?.is_admin === true;
+/**
+ * Check if the authenticated user is an ADMIN.
+ * Expects req.dbUser to be set by the clerkAuth middleware.
+ */
+export default function requireAdmin(req, res, next) {
+  if (req.dbUser?.role !== "ADMIN") {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+  next();
 }

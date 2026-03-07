@@ -1,5 +1,5 @@
 /* Cyberpunk Neon Animations */
-@keyframes gridMove {
+@keyframes ac-gridMove {
   0% {
     background-position: 0 0;
   }
@@ -9,7 +9,7 @@
   }
 }
 
-@keyframes fadeIn {
+@keyframes ac-fadeIn {
   from {
     opacity: 0;
   }
@@ -19,7 +19,7 @@
   }
 }
 
-@keyframes spin {
+@keyframes ac-spin {
   0% {
     transform: rotate(0deg);
   }
@@ -29,7 +29,7 @@
   }
 }
 
-@keyframes neonPulse {
+@keyframes ac-neonPulse {
   0%,
   100% {
     opacity: 1;
@@ -42,7 +42,7 @@
   }
 }
 
-.pageWrapper {
+.ac-pageWrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
 }
 
 /* Animated Neon Grid Background */
-.pageWrapper::before {
+.ac-pageWrapper::before {
   content: "";
   position: absolute;
   top: 0;
@@ -65,13 +65,13 @@
     linear-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 240, 255, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
-  animation: gridMove 20s linear infinite;
+  animation: ac-gridMove 20s linear infinite;
   z-index: 0;
   opacity: 0.3;
 }
 
 /* Radial gradient overlay */
-.pageWrapper::after {
+.ac-pageWrapper::after {
   content: "";
   position: absolute;
   top: 0;
@@ -87,27 +87,27 @@
   pointer-events: none;
 }
 
-.loadingContainer {
+.ac-loadingContainer {
   position: relative;
   z-index: 1;
   text-align: center;
-  animation: fadeIn 0.5s ease-out;
+  animation: ac-fadeIn 0.5s ease-out;
 }
 
-.spinner {
+.ac-spinner {
   width: 80px;
   height: 80px;
   border: 6px solid rgba(0, 240, 255, 0.2);
   border-top-color: var(--primary);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: ac-spin 1s linear infinite;
   margin: 0 auto 24px;
   box-shadow:
     0 0 30px rgba(0, 240, 255, 0.4),
     0 0 60px rgba(0, 240, 255, 0.2);
 }
 
-.loadingText {
+.ac-loadingText {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-bright);
@@ -117,15 +117,15 @@
     0 0 40px rgba(0, 240, 255, 0.3);
 }
 
-.loadingSubtext {
+.ac-loadingSubtext {
   font-size: 1rem;
   color: var(--text-main);
-  animation: neonPulse 2s ease-in-out infinite;
+  animation: ac-neonPulse 2s ease-in-out infinite;
 }
 
-.loadingIcon {
+.ac-loadingIcon {
   font-size: 4rem;
   margin-bottom: 24px;
   display: inline-block;
-  animation: neonPulse 2s ease-in-out infinite;
+  animation: ac-neonPulse 2s ease-in-out infinite;
 }

@@ -1,29 +1,56 @@
-import supabase from '../lib/supabase.js';
+import { requireAuth, getAuth, clerkClient } from "@clerk/express";
+import User from "../models/user.model.js";
+import { inferRoleFromEmail } from "../utils/inferRole.js";
 
-export async function requireAuth(req, res, next) {
+/**
+ * Clerk auth middleware chain:
+ * 1. requireAuth() — verifies the Clerk JWT, returns 401 if invalid
+ * 2. attachDbUser  — looks up (or creates) the MongoDB User by Clerk userId
+ *
+ * Usage in routes:  router.get("/path", clerkAuth, async (req, res) => { ... })
+ * Access user via:  req.dbUser
+ */
+async function attachDbUser(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
+    const { userId } = getAuth(req);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Missing auth token' });
+    if (!userId) {
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
-    const token = authHeader.split(' ')[1];
+    // Look up existing user by Clerk ID
+    let user = await User.findOne({ firebaseUid: userId });
 
-    const { data, error } = await supabase.auth.getUser(token);
+    if (!user) {
+      // First login — fetch profile from Clerk and auto-create
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const email = clerkUser.emailAddresses?.[0]?.emailAddress || "";
+      const name =
+        `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() ||
+        email;
 
-    if (error || !data?.user) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
+      const role = inferRoleFromEmail(email);
+
+      if (!role) {
+        return res.status(403).json({ error: "Unauthorized email domain" });
+      }
+
+      user = await User.create({
+        firebaseUid: userId,
+        email,
+        name,
+        role,
+        approved: false,
+      });
     }
 
-    req.user = {
-      id: data.user.id,
-      email: data.user.email
-    };
-
+    req.dbUser = user;
     next();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Auth middleware failed' });
+    console.error("attachDbUser error:", err);
+    res.status(500).json({ error: "Auth middleware failed" });
   }
 }
+
+// Export a middleware array: first verify Clerk JWT, then attach DB user
+export const clerkAuth = [requireAuth(), attachDbUser];

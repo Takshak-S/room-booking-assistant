@@ -1,32 +1,37 @@
 import express from "express";
-import supabase from "../lib/supabase.js";
-import { requireAuth } from "../middleware/auth.js";
+import { clerkAuth } from "../middleware/auth.js";
+import requireAdmin from "../middleware/requireAdmin.js";
+import Resource from "../models/resource.model.js";
+import Booking from "../models/booking.model.js";
 
 const router = express.Router();
 
-router.get("/resources", requireAuth, async (req, res) => {
-  const { type, min_capacity, has_projector, has_ac } = req.query;
+/**
+ * GET /resources — list resources with optional filters
+ */
+router.get("/resources", clerkAuth, async (req, res) => {
+  const { type, min_capacity } = req.query;
 
-  let query = supabase.from("resources").select("*").eq("is_active", true);
+  try {
+    const filter = { available: true };
 
-  if (type) query = query.eq("type", type);
-  if (min_capacity) query = query.gte("capacity", Number(min_capacity));
-  if (has_projector)
-    query = query.eq("has_projector", has_projector === "true");
-  if (has_ac) query = query.eq("has_ac", has_ac === "true");
+    if (type) filter.type = type;
+    if (min_capacity) filter.capacity = { $gte: Number(min_capacity) };
 
-  const { data, error } = await query.order("capacity");
+    const resources = await Resource.find(filter).sort({ capacity: 1 });
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
+    res.json(resources);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-
-  res.json(data);
 });
 
-router.get("/resources/availability", requireAuth, async (req, res) => {
-  const { start_time, end_time, type, min_capacity, has_projector, has_ac } =
-    req.query;
+/**
+ * GET /resources/availability — resources available in a time window
+ */
+router.get("/resources/availability", clerkAuth, async (req, res) => {
+  const { start_time, end_time, type, min_capacity } = req.query;
 
   if (!start_time || !end_time) {
     return res.status(400).json({
@@ -34,85 +39,82 @@ router.get("/resources/availability", requireAuth, async (req, res) => {
     });
   }
 
-  // Step 1: filter resources
-  let resourceQuery = supabase
-    .from("resources")
-    .select("*")
-    .eq("is_active", true);
+  try {
+    const filter = { available: true };
 
-  if (type) resourceQuery = resourceQuery.eq("type", type);
-  if (min_capacity)
-    resourceQuery = resourceQuery.gte("capacity", Number(min_capacity));
-  if (has_projector)
-    resourceQuery = resourceQuery.eq("has_projector", has_projector === "true");
-  if (has_ac) resourceQuery = resourceQuery.eq("has_ac", has_ac === "true");
+    if (type) filter.type = type;
+    if (min_capacity) filter.capacity = { $gte: Number(min_capacity) };
 
-  const { data: resources, error } = await resourceQuery;
+    const resources = await Resource.find(filter);
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
+    if (!resources.length) {
+      return res.json([]);
+    }
+
+    const resourceIds = resources.map((r) => r._id);
+
+    // Find conflicting bookings
+    const conflicts = await Booking.find({
+      resourceId: { $in: resourceIds },
+      status: { $in: ["PENDING", "APPROVED"] },
+      startTime: { $lt: new Date(end_time) },
+      endTime: { $gt: new Date(start_time) },
+    }).select("resourceId");
+
+    const blockedIds = new Set(conflicts.map((c) => c.resourceId.toString()));
+
+    const available = resources.filter(
+      (r) => !blockedIds.has(r._id.toString()),
+    );
+
+    res.json(available);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-
-  if (!resources.length) {
-    return res.json([]);
-  }
-
-  // Step 2: find conflicting bookings
-  const resourceIds = resources.map((r) => r.id);
-
-  const { data: conflicts } = await supabase
-    .from("bookings")
-    .select("resource_id")
-    .in("resource_id", resourceIds)
-    .in("status", ["PENDING_APPROVAL", "APPROVED"])
-    .lt("start_time", end_time)
-    .gt("end_time", start_time);
-
-  const blockedIds = new Set((conflicts || []).map((c) => c.resource_id));
-
-  // Step 3: available resources
-  const available = resources.filter((r) => !blockedIds.has(r.id));
-
-  res.json(available);
 });
 
-router.get("/resources/:resourceId", requireAuth, async (req, res) => {
-  const { resourceId } = req.params;
+/**
+ * GET /resources/:resourceId — single resource
+ */
+router.get("/resources/:resourceId", clerkAuth, async (req, res) => {
+  try {
+    const resource = await Resource.findById(req.params.resourceId);
 
-  const { data, error } = await supabase
-    .from("resources")
-    .select("*")
-    .eq("id", resourceId)
-    .single();
+    if (!resource) {
+      return res.status(404).json({ error: "Resource not found" });
+    }
 
-  if (error || !data) {
-    return res.status(404).json({ error: "Resource not found" });
+    res.json(resource);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-
-  res.json(data);
 });
 
-router.post("/admin/resources", requireAuth, async (req, res) => {
-  const { name, type, capacity, has_projector, has_ac, location } = req.body;
+/**
+ * POST /admin/resources — create a resource (admin only)
+ */
+router.post("/admin/resources", clerkAuth, requireAdmin, async (req, res) => {
+  const { name, type, capacity, location, amenities, tags, description } =
+    req.body;
 
-  const { data, error } = await supabase
-    .from("resources")
-    .insert({
+  try {
+    const resource = await Resource.create({
       name,
       type,
       capacity,
-      has_projector,
-      has_ac,
       location,
-    })
-    .select()
-    .single();
+      amenities,
+      tags,
+      description,
+    });
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
+    res.json(resource);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-
-  res.json(data);
 });
 
 export default router;

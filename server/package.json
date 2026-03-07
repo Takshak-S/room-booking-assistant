@@ -7,14 +7,18 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "dependencies": {
-    "@supabase/supabase-js": "^2.95.2",
+    "@clerk/express": "^2.0.1",
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.2.4",
     "multer": "^2.0.2"
   },
   "devDependencies": {

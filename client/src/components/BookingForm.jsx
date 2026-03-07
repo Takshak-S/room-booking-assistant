@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import styles from "./BookingForm.module.css";
-import  supabase from "../config/supabase";
+import { useAuth } from "@clerk/clerk-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CheckCircle2, XCircle, AlertCircle, Loader2 } from "lucide-react";
 
 function BookingForm({
   resource,
@@ -8,21 +11,18 @@ function BookingForm({
   initialBooking = null,
   onCancelEdit,
 }) {
+  const { getToken } = useAuth();
+
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
-  // null | checking | past | invalid | conflict | available | submitting
-  const [approvalFile, setApprovalFile] = useState(null);
 
   useEffect(() => {
     setStatus(null);
-    setApprovalFile(null);
-
     if (initialBooking) {
-      const start = new Date(initialBooking.start_time);
-      const end = new Date(initialBooking.end_time);
-
+      const start = new Date(initialBooking.startTime);
+      const end = new Date(initialBooking.endTime);
       setDate(start.toISOString().slice(0, 10));
       setStartTime(start.toTimeString().slice(0, 5));
       setEndTime(end.toTimeString().slice(0, 5));
@@ -33,19 +33,13 @@ function BookingForm({
     }
   }, [resource, initialBooking]);
 
-  /* -----------------------------
-     CHECK AVAILABILITY
-  ----------------------------- */
   const handleCheck = async (e) => {
     e.preventDefault();
-
     if (!date || !startTime || !endTime) return;
-
     if (endTime <= startTime) {
       setStatus("invalid");
       return;
     }
-
     const start = new Date(`${date}T${startTime}:00`);
     if (start <= new Date()) {
       setStatus("past");
@@ -53,82 +47,50 @@ function BookingForm({
     }
 
     setStatus("checking");
-
-    const { data } = await supabase.auth.getSession();
-    const token = data?.session?.access_token;
-
+    const token = await getToken();
     try {
       const params = new URLSearchParams({
         start_time: `${date}T${startTime}:00`,
         end_time: `${date}T${endTime}:00`,
       });
-
       const res = await fetch(
         `http://localhost:5000/api/resources/availability?${params}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+          headers: { Authorization: `Bearer ${token}` },
+        },
       );
-
-      if (!res.ok) throw new Error("Availability check failed");
-
-      const availableResources = await res.json();
-      const isFree = availableResources.some(
-        (r) => r.id === resource.id
+      if (!res.ok) throw new Error();
+      const available = await res.json();
+      setStatus(
+        available.some((r) => r._id === resource._id)
+          ? "available"
+          : "conflict",
       );
-
-      setStatus(isFree ? "available" : "conflict");
     } catch {
       setStatus("conflict");
     }
   };
 
-  /* -----------------------------
-     CONFIRM BOOKING (SINGLE REQUEST)
-  ----------------------------- */
   const handleConfirm = async () => {
     setStatus("submitting");
-
-    const { data } = await supabase.auth.getSession();
-    const token = data?.session?.access_token;
-
+    const token = await getToken();
     try {
-      const formData = new FormData();
-      formData.append("resource_id", resource.id);
-      formData.append(
-        "start_time",
-        `${date}T${startTime}:00`
-      );
-      formData.append(
-        "end_time",
-        `${date}T${endTime}:00`
-      );
-      formData.append("purpose", "Event booking");
-
-      if (approvalFile) {
-        formData.append("document", approvalFile);
-      }
-
-      const res = await fetch(
-        "http://localhost:5000/api/bookings",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      const dataRes = await res.json();
-
-      if (!res.ok) {
-        throw new Error(dataRes.error || "Booking failed");
-      }
-
-      onBookingConfirmed(dataRes);
+      const res = await fetch("http://localhost:5000/api/bookings", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          resource_id: resource._id,
+          start_time: `${date}T${startTime}:00`,
+          end_time: `${date}T${endTime}:00`,
+          purpose: "Event booking",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Booking failed");
+      onBookingConfirmed(data);
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -137,33 +99,39 @@ function BookingForm({
   };
 
   return (
-    <div className={styles.bookingForm}>
-      <form onSubmit={handleCheck}>
-        {/* DATE & TIME */}
-        <div className={styles.dateTimeRow}>
-          <div>
-            <label>Date</label>
-            <input
+    <div className="space-y-4">
+      <form onSubmit={handleCheck} className="space-y-4">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="bf-date" className="text-xs">
+              Date
+            </Label>
+            <Input
+              id="bf-date"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               required
             />
           </div>
-
-          <div>
-            <label>Start</label>
-            <input
+          <div className="space-y-1.5">
+            <Label htmlFor="bf-start" className="text-xs">
+              Start
+            </Label>
+            <Input
+              id="bf-start"
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
               required
             />
           </div>
-
-          <div>
-            <label>End</label>
-            <input
+          <div className="space-y-1.5">
+            <Label htmlFor="bf-end" className="text-xs">
+              End
+            </Label>
+            <Input
+              id="bf-end"
               type="time"
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
@@ -172,66 +140,68 @@ function BookingForm({
           </div>
         </div>
 
-        {/* DOCUMENT (OPTIONAL) */}
-        <div className={styles.inputGroup}>
-          <label>Event Proof (PDF – optional)</label>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) =>
-              setApprovalFile(e.target.files?.[0] || null)
-            }
-          />
-          {approvalFile && (
-            <p className={styles.fileName}>
-              {approvalFile.name}
-            </p>
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={status === "checking"}
+          >
+            {status === "checking" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Checking…
+              </>
+            ) : (
+              "Check Availability"
+            )}
+          </Button>
+          {initialBooking && onCancelEdit && (
+            <Button type="button" variant="outline" onClick={onCancelEdit}>
+              Cancel
+            </Button>
           )}
         </div>
-
-        <button
-          type="submit"
-          disabled={status === "checking"}
-        >
-          {status === "checking"
-            ? "Checking…"
-            : "Check Availability"}
-        </button>
-
-        {initialBooking && onCancelEdit && (
-          <button type="button" onClick={onCancelEdit}>
-            Cancel
-          </button>
-        )}
       </form>
 
-      {/* STATUS MESSAGES */}
+      {/* Status messages */}
       {status === "invalid" && (
-        <p className={styles.error}>
+        <div className="flex items-center gap-2 rounded-md border border-red-900 bg-red-950/50 p-3 text-sm text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
           End time must be after start time.
-        </p>
+        </div>
       )}
-
       {status === "past" && (
-        <p className={styles.error}>
+        <div className="flex items-center gap-2 rounded-md border border-red-900 bg-red-950/50 p-3 text-sm text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
           Booking must be in the future.
-        </p>
+        </div>
       )}
-
       {status === "conflict" && (
-        <p className={styles.error}>
-          ❌ Slot not available
-        </p>
+        <div className="flex items-center gap-2 rounded-md border border-red-900 bg-red-950/50 p-3 text-sm text-red-400">
+          <XCircle className="h-4 w-4 shrink-0" />
+          Slot not available — pick another time.
+        </div>
       )}
-
       {status === "available" && (
-        <div className={styles.success}>
-          <p>✅ Slot available</p>
-          <button onClick={handleConfirm}>
-            {status === "submitting"
-              ? "Booking…"
-              : "Confirm Booking"}
-          </button>
+        <div className="space-y-3 rounded-md border border-emerald-900 bg-emerald-950/50 p-3">
+          <div className="flex items-center gap-2 text-sm text-emerald-400">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            Slot is available!
+          </div>
+          <Button
+            className="w-full"
+            onClick={handleConfirm}
+            disabled={status === "submitting"}
+          >
+            {status === "submitting" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Booking…
+              </>
+            ) : (
+              "Confirm Booking"
+            )}
+          </Button>
         </div>
       )}
     </div>

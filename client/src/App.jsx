@@ -1,22 +1,126 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import { AuthProvider, useAppAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import AuthCallback from "./auth/AuthCallback";
 import Home from "./pages/Home";
 import StudentProfileForm from "./pages/StudentProfileForm";
 import FacultyProfileForm from "./pages/FacultyProfileForm";
+import WaitingApproval from "./pages/WaitingApproval";
+import AdminDashboard from "./pages/AdminDashboard";
+
+const LoadingScreen = () => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      color: "var(--text-muted)",
+    }}
+  >
+    Loading…
+  </div>
+);
+
+/**
+ * Base guard: signed in + approved.
+ */
+function ProtectedRoute({ children }) {
+  const { profile, loading, isSignedIn } = useAppAuth();
+
+  if (loading) return <LoadingScreen />;
+  if (!isSignedIn) return <Navigate to="/" replace />;
+  if (profile && !profile.approved)
+    return <Navigate to="/waiting-approval" replace />;
+
+  return children;
+}
+
+/**
+ * User-only routes: ADMIN role is redirected to /admin.
+ */
+function UserRoute({ children }) {
+  const { profile, loading } = useAppAuth();
+
+  if (loading) return <LoadingScreen />;
+  if (profile?.role === "ADMIN") return <Navigate to="/admin" replace />;
+
+  return <ProtectedRoute>{children}</ProtectedRoute>;
+}
+
+/**
+ * Admin-only routes: non-ADMIN role is redirected to /home.
+ */
+function AdminRoute({ children }) {
+  const { profile, loading } = useAppAuth();
+
+  if (loading) return <LoadingScreen />;
+  if (profile && profile.role !== "ADMIN")
+    return <Navigate to="/home" replace />;
+
+  return <ProtectedRoute>{children}</ProtectedRoute>;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route
+        path="/sso-callback"
+        element={<AuthenticateWithRedirectCallback />}
+      />
+      <Route path="/waiting-approval" element={<WaitingApproval />} />
+      <Route
+        path="/home"
+        element={
+          <UserRoute>
+            <Home />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/complete-form/student"
+        element={
+          <UserRoute>
+            <StudentProfileForm />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/complete-form/faculty"
+        element={
+          <UserRoute>
+            <FacultyProfileForm />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <UserRoute>
+            <Dashboard />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+    </Routes>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/complete-form/student" element={<StudentProfileForm />} />
-        <Route path="/complete-form/faculty" element={<FacultyProfileForm />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-      </Routes>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
