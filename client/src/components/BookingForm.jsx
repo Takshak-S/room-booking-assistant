@@ -1,9 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@clerk/clerk-react";
+import { format } from "date-fns";
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, XCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import ClockPicker from "./ClockPicker";
 
 function BookingForm({
   resource,
@@ -13,7 +29,7 @@ function BookingForm({
 }) {
   const { getToken } = useAuth();
 
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(null); // Now a Date object
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
@@ -23,24 +39,27 @@ function BookingForm({
     if (initialBooking) {
       const start = new Date(initialBooking.startTime);
       const end = new Date(initialBooking.endTime);
-      setDate(start.toISOString().slice(0, 10));
+      setDate(start);
       setStartTime(start.toTimeString().slice(0, 5));
       setEndTime(end.toTimeString().slice(0, 5));
     } else {
-      setDate("");
+      setDate(null);
       setStartTime("");
       setEndTime("");
     }
   }, [resource, initialBooking]);
 
   const handleCheck = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!date || !startTime || !endTime) return;
+
     if (endTime <= startTime) {
       setStatus("invalid");
       return;
     }
-    const start = new Date(`${date}T${startTime}:00`);
+
+    const dateStr = format(date, "yyyy-MM-dd");
+    const start = new Date(`${dateStr}T${startTime}:00`);
     if (start <= new Date()) {
       setStatus("past");
       return;
@@ -50,8 +69,8 @@ function BookingForm({
     const token = await getToken();
     try {
       const params = new URLSearchParams({
-        start_time: `${date}T${startTime}:00`,
-        end_time: `${date}T${endTime}:00`,
+        start_time: `${dateStr}T${startTime}:00`,
+        end_time: `${dateStr}T${endTime}:00`,
       });
       const res = await fetch(
         `http://localhost:5000/api/resources/availability?${params}`,
@@ -74,6 +93,7 @@ function BookingForm({
   const handleConfirm = async () => {
     setStatus("submitting");
     const token = await getToken();
+    const dateStr = format(date, "yyyy-MM-dd");
     try {
       const res = await fetch("http://localhost:5000/api/bookings", {
         method: "POST",
@@ -83,8 +103,8 @@ function BookingForm({
         },
         body: JSON.stringify({
           resource_id: resource._id,
-          start_time: `${date}T${startTime}:00`,
-          end_time: `${date}T${endTime}:00`,
+          start_time: `${dateStr}T${startTime}:00`,
+          end_time: `${dateStr}T${endTime}:00`,
           purpose: "Event booking",
         }),
       });
@@ -99,52 +119,89 @@ function BookingForm({
   };
 
   return (
-    <div className="space-y-4">
-      <form onSubmit={handleCheck} className="space-y-4">
-        <div className="grid grid-cols-3 gap-3">
-          <div className="space-y-1.5">
-            <Label htmlFor="bf-date" className="text-xs">
-              Date
-            </Label>
-            <Input
-              id="bf-date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
-            />
+    <div className="space-y-6">
+      <div className="space-y-4">
+        {/* Date Selection */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors h-10",
+                  !date && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-zinc-400" />
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto p-0 border-zinc-800 bg-zinc-950"
+              align="start"
+            >
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+                disabled={(d) => d < new Date().setHours(0, 0, 0, 0)}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Time Selection */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Start Time</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors h-10"
+                >
+                  <Clock className="mr-2 h-4 w-4 text-zinc-400" />
+                  {startTime || "Select"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-0 border-zinc-800 bg-zinc-950"
+                align="start"
+              >
+                <ClockPicker value={startTime} onChange={setStartTime} />
+              </PopoverContent>
+            </Popover>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="bf-start" className="text-xs">
-              Start
-            </Label>
-            <Input
-              id="bf-start"
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="bf-end" className="text-xs">
-              End
-            </Label>
-            <Input
-              id="bf-end"
-              type="time"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              required
-            />
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">End Time</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors h-10"
+                >
+                  <Clock className="mr-2 h-4 w-4 text-zinc-400" />
+                  {endTime || "Select"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-0 border-zinc-800 bg-zinc-950"
+                align="start"
+              >
+                <ClockPicker value={endTime} onChange={setEndTime} />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-2">
           <Button
-            type="submit"
-            className="flex-1"
-            disabled={status === "checking"}
+            onClick={handleCheck}
+            className="flex-1 h-10 font-semibold"
+            disabled={status === "checking" || !date || !startTime || !endTime}
           >
             {status === "checking" ? (
               <>
@@ -156,54 +213,61 @@ function BookingForm({
             )}
           </Button>
           {initialBooking && onCancelEdit && (
-            <Button type="button" variant="outline" onClick={onCancelEdit}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancelEdit}
+              className="h-10"
+            >
               Cancel
             </Button>
           )}
         </div>
-      </form>
+      </div>
 
       {/* Status messages */}
-      {status === "invalid" && (
-        <div className="flex items-center gap-2 rounded-md border border-red-900 bg-red-950/50 p-3 text-sm text-red-400">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          End time must be after start time.
-        </div>
-      )}
-      {status === "past" && (
-        <div className="flex items-center gap-2 rounded-md border border-red-900 bg-red-950/50 p-3 text-sm text-red-400">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          Booking must be in the future.
-        </div>
-      )}
-      {status === "conflict" && (
-        <div className="flex items-center gap-2 rounded-md border border-red-900 bg-red-950/50 p-3 text-sm text-red-400">
-          <XCircle className="h-4 w-4 shrink-0" />
-          Slot not available — pick another time.
-        </div>
-      )}
-      {status === "available" && (
-        <div className="space-y-3 rounded-md border border-emerald-900 bg-emerald-950/50 p-3">
-          <div className="flex items-center gap-2 text-sm text-emerald-400">
-            <CheckCircle2 className="h-4 w-4 shrink-0" />
-            Slot is available!
+      <div className="min-h-[60px]">
+        {status === "invalid" && (
+          <div className="flex items-center gap-3 rounded-lg border border-red-900 bg-red-950/30 p-4 text-sm text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <p>End time must be after start time.</p>
           </div>
-          <Button
-            className="w-full"
-            onClick={handleConfirm}
-            disabled={status === "submitting"}
-          >
-            {status === "submitting" ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Booking…
-              </>
-            ) : (
-              "Confirm Booking"
-            )}
-          </Button>
-        </div>
-      )}
+        )}
+        {status === "past" && (
+          <div className="flex items-center gap-3 rounded-lg border border-red-900 bg-red-950/30 p-4 text-sm text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <p>Booking must be in the future.</p>
+          </div>
+        )}
+        {status === "conflict" && (
+          <div className="flex items-center gap-3 rounded-lg border border-red-900 bg-red-950/30 p-4 text-sm text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">
+            <XCircle className="h-5 w-5 shrink-0" />
+            <p>This slot is already booked. Please choose another time.</p>
+          </div>
+        )}
+        {status === "available" && (
+          <div className="space-y-4 rounded-lg border border-emerald-900 bg-emerald-950/30 p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3 text-sm text-emerald-400 font-medium">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+              Slot is available!
+            </div>
+            <Button
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11"
+              onClick={handleConfirm}
+              disabled={status === "submitting"}
+            >
+              {status === "submitting" ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Booking…
+                </>
+              ) : (
+                "Confirm Booking"
+              )}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

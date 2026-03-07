@@ -69,7 +69,9 @@ function Navbar() {
   const role = profile?.role ?? "—";
   const name = profile?.name ?? "?";
   const firstLetter = name ? name[0].toUpperCase() : "?";
-
+  const temp = name.split(" ");
+  const header_display_name =
+    temp.length > 1 ? temp.slice(0, temp.length - 1).join(" ") : name;
   return (
     <>
       {/* ---- TOP BAR ---- */}
@@ -84,7 +86,7 @@ function Navbar() {
               {role}
             </Badge>
             <span className="hidden text-sm font-medium text-foreground sm:inline">
-              {name}
+              {header_display_name}
             </span>
           </div>
 
