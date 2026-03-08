@@ -7,7 +7,7 @@ const HOURS = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
 const ClockPicker = ({ value, onChange, label }) => {
-  const [mode, setMode] = useState("hours"); 
+  const [mode, setMode] = useState("hours");
   const [tempHour, setTempHour] = useState(12);
   const [tempMinute, setTempMinute] = useState(0);
   const [tempAmPm, setTempAmPm] = useState("AM");
@@ -60,7 +60,7 @@ const ClockPicker = ({ value, onChange, label }) => {
   const angle = getAngle(currentVal, mode === "hours");
 
   return (
-    <div className="flex flex-col items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl w-[280px]">
+    <div className="flex flex-col items-center p-4 bg-card rounded-xl border border-border shadow-2xl w-[280px]">
       {}
       <div className="flex items-center justify-between w-full mb-6">
         <div className="flex items-baseline gap-1">
@@ -68,17 +68,17 @@ const ClockPicker = ({ value, onChange, label }) => {
             onClick={() => setMode("hours")}
             className={cn(
               "text-3xl font-bold transition-colors",
-              mode === "hours" ? "text-primary" : "text-zinc-500",
+              mode === "hours" ? "text-primary" : "text-muted-foreground/50",
             )}
           >
             {tempHour}
           </button>
-          <span className="text-3xl font-bold text-zinc-500">:</span>
+          <span className="text-3xl font-bold text-muted-foreground/50">:</span>
           <button
             onClick={() => setMode("minutes")}
             className={cn(
               "text-3xl font-bold transition-colors",
-              mode === "minutes" ? "text-primary" : "text-zinc-500",
+              mode === "minutes" ? "text-primary" : "text-muted-foreground/50",
             )}
           >
             {tempMinute.toString().padStart(2, "0")}
@@ -92,7 +92,7 @@ const ClockPicker = ({ value, onChange, label }) => {
               "h-7 px-2 text-xs font-bold",
               tempAmPm === "AM"
                 ? "bg-primary text-primary-foreground"
-                : "text-zinc-500",
+                : "text-muted-foreground",
             )}
             onClick={() => toggleAmPm("AM")}
           >
@@ -105,7 +105,7 @@ const ClockPicker = ({ value, onChange, label }) => {
               "h-7 px-2 text-xs font-bold",
               tempAmPm === "PM"
                 ? "bg-primary text-primary-foreground"
-                : "text-zinc-500",
+                : "text-muted-foreground",
             )}
             onClick={() => toggleAmPm("PM")}
           >
@@ -115,7 +115,7 @@ const ClockPicker = ({ value, onChange, label }) => {
       </div>
 
       {}
-      <div className="relative w-48 h-48 rounded-full bg-zinc-900 flex items-center justify-center border border-zinc-800">
+      <div className="relative w-48 h-48 rounded-full bg-secondary flex items-center justify-center border border-border">
         {}
         <div className="absolute w-2 h-2 rounded-full bg-primary z-20" />
 
@@ -153,10 +153,10 @@ const ClockPicker = ({ value, onChange, label }) => {
                   key={`${mode}-${val}`}
                   onClick={() => handleSelect(val)}
                   className={cn(
-                    "absolute flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors hover:bg-zinc-800 transform -translate-x-1/2 -translate-y-1/2",
+                    "absolute flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors hover:bg-primary/10 transform -translate-x-1/2 -translate-y-1/2",
                     currentVal === val
                       ? "text-primary-foreground"
-                      : "text-zinc-400",
+                      : "text-muted-foreground",
                   )}
                   style={{
                     left: `calc(50% + ${x}px)`,
@@ -171,7 +171,7 @@ const ClockPicker = ({ value, onChange, label }) => {
         </AnimatePresence>
       </div>
 
-      <p className="mt-4 text-[10px] uppercase tracking-widest text-zinc-600 font-bold">
+      <p className="mt-4 text-[10px] uppercase tracking-widest text-muted-foreground/70 font-bold">
         Select {mode}
       </p>
     </div>

@@ -39,7 +39,7 @@ function ResourceSearchFilter({
 
       {}
       {showFilters && (
-        <div className="grid gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-3 rounded-lg border bg-card/60 p-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-1.5">
             <Label className="text-xs">Type</Label>
             <Input

@@ -23,8 +23,8 @@ function ResourceList({ resources, onSelect, selectedId }) {
             tabIndex={0}
             onClick={() => onSelect(r)}
             onKeyDown={(e) => e.key === "Enter" && onSelect(r)}
-            className={`cursor-pointer border-zinc-800 bg-zinc-950/60 transition-all hover:border-zinc-600 ${
-              selected ? "border-primary ring-1 ring-primary" : ""
+            className={`cursor-pointer border-border bg-card/60 transition-all hover:border-primary/50 ${
+              selected ? "border-primary ring-1 ring-primary bg-primary/5" : ""
             }`}
           >
             <CardContent className="space-y-3 p-4">
@@ -58,7 +58,7 @@ function ResourceList({ resources, onSelect, selectedId }) {
               <Button
                 size="sm"
                 variant={selected ? "default" : "outline"}
-                className="w-full text-xs"
+                className="w-full text-xs font-semibold"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelect(r);

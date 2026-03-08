@@ -108,7 +108,7 @@ function Home() {
             {features.map((f) => (
               <Card
                 key={f.title}
-                className="border-zinc-800 bg-zinc-950/60 transition-colors hover:border-zinc-700"
+                className="border-border bg-card/60 transition-colors hover:border-primary/50"
               >
                 <CardHeader className="space-y-1 pb-2">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -138,9 +138,9 @@ function Home() {
             {benefits.map((b) => (
               <div
                 key={b}
-                className="flex items-start gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-4 transition-colors hover:border-zinc-700"
+                className="flex items-start gap-3 rounded-lg border border-border bg-card/60 p-4 transition-colors hover:border-primary/50"
               >
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
                 <span className="text-sm text-muted-foreground">{b}</span>
               </div>
             ))}

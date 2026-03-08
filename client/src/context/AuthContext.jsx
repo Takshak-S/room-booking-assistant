@@ -34,9 +34,7 @@ function readCache() {
 function writeCache(profile) {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(profile));
-  } catch {
-    
-  }
+  } catch {}
 }
 
 function clearCache() {
@@ -49,7 +47,7 @@ export function AuthProvider({ children }) {
 
   const [profile, setProfile] = useState(readCache);
   const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState(null); 
+  const [authError, setAuthError] = useState(null);
   const { signOut } = useClerk();
 
   const fetchProfile = useCallback(async () => {
@@ -87,7 +85,6 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, [isSignedIn, getToken]);
 
-  
   useEffect(() => {
     if (!authLoaded || !userLoaded) return;
     fetchProfile();
@@ -99,10 +96,10 @@ export function AuthProvider({ children }) {
   }, [fetchProfile]);
 
   const value = {
-    profile, 
-    loading, 
-    isSignedIn, 
-    clerkUser, 
+    profile,
+    loading,
+    isSignedIn,
+    clerkUser,
     refreshProfile,
     clearProfile: () => {
       setProfile(null);
@@ -133,7 +130,7 @@ function AuthErrorDialog({ open, onSignOut }) {
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
-        className="sm:max-w-md border-zinc-800 bg-zinc-950 text-foreground"
+        className="sm:max-w-md border-border bg-card text-foreground"
         showCloseButton={false}
       >
         <DialogHeader className="flex flex-col items-center gap-4">
@@ -143,10 +140,12 @@ function AuthErrorDialog({ open, onSignOut }) {
           <DialogTitle className="text-xl font-bold">
             Unauthorized Domain
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-400">
+          <DialogDescription className="text-center text-muted-foreground">
             Your email domain is not authorized to access this portal. Please
             sign in using your{" "}
-            <span className="text-zinc-200 font-medium">University Email</span>{" "}
+            <span className="text-foreground font-semibold">
+              University Email
+            </span>{" "}
             account.
           </DialogDescription>
         </DialogHeader>

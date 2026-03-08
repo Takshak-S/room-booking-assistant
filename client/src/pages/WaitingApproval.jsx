@@ -21,11 +21,11 @@ function WaitingApproval() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-background to-background" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background" />
 
-      <Card className="relative z-10 w-full max-w-md border-zinc-800 bg-zinc-950/80 backdrop-blur-sm">
+      <Card className="relative z-10 w-full max-w-md border-border bg-card/80 backdrop-blur-sm shadow-2xl">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Clock className="h-7 w-7" />
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
@@ -44,7 +44,7 @@ function WaitingApproval() {
           <Button
             variant="outline"
             size="lg"
-            className="w-full gap-2 border-zinc-700 bg-zinc-900 hover:bg-zinc-800"
+            className="w-full gap-2 border-border bg-secondary hover:bg-secondary/80"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />

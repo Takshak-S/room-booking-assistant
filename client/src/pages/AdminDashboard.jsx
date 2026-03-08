@@ -63,7 +63,6 @@ function AdminDashboard() {
     if (profile && profile.role !== "ADMIN") navigate("/home");
   }, [profile, navigate]);
 
-  
   const authFetch = useCallback(
     async (url) => {
       const token = await getToken();
@@ -89,7 +88,6 @@ function AdminDashboard() {
     [getToken],
   );
 
-  
   const loadPending = useCallback(async () => {
     setPendingLoading(true);
     try {
@@ -173,13 +171,11 @@ function AdminDashboard() {
     }
   };
 
-  
   useEffect(() => {
     loadPending();
     loadUsers();
   }, [loadPending, loadUsers]);
 
-  
   const totalUsers = allUsers.length;
   const approvedCount = allUsers.filter((u) => u.approved).length;
   const pendingCount = pendingUsers.length;
@@ -187,9 +183,16 @@ function AdminDashboard() {
   if (!profile) return null;
 
   const roleBadge = (role) => {
-    const v = { ADMIN: "default", STUDENT: "secondary", FACULTY: "outline" };
+    const v = {
+      ADMIN: "bg-primary/10 text-primary border-primary/20",
+      STUDENT: "bg-secondary text-secondary-foreground border-border",
+      FACULTY: "bg-accent/10 text-accent border-accent/20",
+    };
     return (
-      <Badge variant={v[role] || "secondary"} className="text-[10px] uppercase">
+      <Badge
+        variant="outline"
+        className={`text-[10px] uppercase ${v[role] || ""}`}
+      >
         {role || "—"}
       </Badge>
     );
@@ -197,16 +200,17 @@ function AdminDashboard() {
 
   const statusBadge = (s) => {
     const cls = {
-      APPROVED: "border-emerald-800 text-emerald-400",
-      PENDING: "border-amber-800 text-amber-400",
-      REJECTED: "border-red-800 text-red-400",
-      CANCELLED: "border-zinc-700 text-zinc-400",
-      OVERRIDE_PENDING: "border-purple-800 text-purple-400",
+      APPROVED: "border-accent/30 bg-accent/5 text-accent",
+      PENDING: "border-primary/30 bg-primary/5 text-primary",
+      REJECTED: "border-destructive/30 bg-destructive/5 text-destructive",
+      CANCELLED: "border-border text-muted-foreground",
+      OVERRIDE_PENDING:
+        "border-primary/50 bg-primary/10 text-primary animate-pulse",
     };
     return (
       <Badge
         variant="outline"
-        className={`text-[10px] uppercase ${cls[s] || "border-zinc-700 text-zinc-400"}`}
+        className={`text-[10px] uppercase ${cls[s] || "border-border text-muted-foreground"}`}
       >
         {s}
       </Badge>
@@ -274,7 +278,7 @@ function AdminDashboard() {
 
           {}
           <TabsContent value="pending" className="mt-4">
-            <Card className="border-zinc-800 bg-zinc-950/60">
+            <Card className="border-border bg-card/60">
               <CardContent className="p-4">
                 <h2 className="mb-4 text-lg font-semibold">
                   Users Awaiting Approval
@@ -312,7 +316,7 @@ function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="h-7 gap-1.5 border-emerald-800 text-emerald-400 hover:bg-emerald-950"
+                                className="h-7 border-accent/50 text-accent hover:bg-accent/10"
                                 onClick={() => approveUser(u._id)}
                               >
                                 <CheckCircle2 className="h-3.5 w-3.5" /> Approve
@@ -360,7 +364,7 @@ function AdminDashboard() {
               ))}
             </div>
 
-            <Card className="border-zinc-800 bg-zinc-950/60">
+            <Card className="border-border bg-card/60">
               <CardContent className="p-4">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-semibold">All Users</h2>
@@ -424,7 +428,7 @@ function AdminDashboard() {
 
           {}
           <TabsContent value="bookings" className="mt-4">
-            <Card className="border-zinc-800 bg-zinc-950/60">
+            <Card className="border-border bg-card/60">
               <CardContent className="p-4">
                 <div className="mb-4 flex flex-wrap items-end gap-3">
                   <h2 className="mr-auto text-lg font-semibold">
@@ -522,7 +526,7 @@ function AdminDashboard() {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-7 px-2 border-emerald-800 text-emerald-400 hover:bg-emerald-950"
+                                    className="h-7 px-2 border-accent/50 text-accent hover:bg-accent/10"
                                     onClick={() =>
                                       handleBookingAction(
                                         b._id,
@@ -535,7 +539,7 @@ function AdminDashboard() {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-7 px-2 border-red-800 text-red-400 hover:bg-red-950"
+                                    className="h-7 px-2 border-destructive/50 text-destructive hover:bg-destructive/10"
                                     onClick={() =>
                                       handleBookingAction(b._id, "reject")
                                     }
@@ -559,7 +563,7 @@ function AdminDashboard() {
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-7 px-2 border-red-800 text-red-400 hover:bg-red-950"
+                                    className="h-7 px-2 border-red-800/50 text-red-500 hover:bg-red-500/10"
                                     onClick={() =>
                                       handleBookingAction(b._id, "reject")
                                     }
@@ -581,7 +585,7 @@ function AdminDashboard() {
 
           {}
           <TabsContent value="venue" className="mt-4">
-            <Card className="border-zinc-800 bg-zinc-950/60">
+            <Card className="border-border bg-card/60">
               <CardContent className="p-4">
                 <div className="mb-4 flex items-center gap-3">
                   <h2 className="mr-auto text-lg font-semibold">

@@ -29,7 +29,7 @@ function BookingForm({
 }) {
   const { getToken } = useAuth();
 
-  const [date, setDate] = useState(null); 
+  const [date, setDate] = useState(null);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
@@ -146,18 +146,15 @@ function BookingForm({
               <Button
                 variant={"outline"}
                 className={cn(
-                  "w-full justify-start text-left font-normal border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors h-10",
+                  "w-full justify-start text-left font-normal border-border bg-secondary/50 hover:bg-secondary transition-colors h-10",
                   !date && "text-muted-foreground",
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4 text-zinc-400" />
+                <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                 {date ? format(date, "PPP") : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent
-              className="w-auto p-0 border-zinc-800 bg-zinc-950"
-              align="start"
-            >
+            <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
                 selected={date}
@@ -177,16 +174,13 @@ function BookingForm({
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors h-10"
+                  className="w-full justify-start text-left font-normal border-border bg-secondary/50 hover:bg-secondary transition-colors h-10"
                 >
-                  <Clock className="mr-2 h-4 w-4 text-zinc-400" />
+                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                   {startTime || "Select"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0 border-zinc-800 bg-zinc-950"
-                align="start"
-              >
+              <PopoverContent className="w-auto p-0" align="start">
                 <ClockPicker value={startTime} onChange={setStartTime} />
               </PopoverContent>
             </Popover>
@@ -198,16 +192,13 @@ function BookingForm({
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors h-10"
+                  className="w-full justify-start text-left font-normal border-border bg-secondary/50 hover:bg-secondary transition-colors h-10"
                 >
-                  <Clock className="mr-2 h-4 w-4 text-zinc-400" />
+                  <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
                   {endTime || "Select"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0 border-zinc-800 bg-zinc-950"
-                align="start"
-              >
+              <PopoverContent className="w-auto p-0" align="start">
                 <ClockPicker value={endTime} onChange={setEndTime} />
               </PopoverContent>
             </Popover>
@@ -270,7 +261,7 @@ function BookingForm({
                 Reason for Override
               </Label>
               <textarea
-                className="w-full rounded-md border border-zinc-800 bg-zinc-900/50 p-2 text-sm focus:border-amber-700 focus:outline-none"
+                className="w-full rounded-md border bg-secondary/50 p-2 text-sm focus:border-primary focus:outline-none"
                 placeholder="Explain why you need this venue..."
                 rows={2}
                 value={overrideReason}

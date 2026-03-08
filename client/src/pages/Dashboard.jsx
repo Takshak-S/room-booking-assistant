@@ -83,7 +83,7 @@ function Dashboard() {
       const b = location.state.editBooking;
       setSelectedResource(b.resourceId);
       setEditingBooking(b);
-      
+
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
@@ -126,7 +126,7 @@ function Dashboard() {
           }
         }}
       >
-        <DialogContent className="border-zinc-800 bg-zinc-950 sm:max-w-md">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {editingBooking

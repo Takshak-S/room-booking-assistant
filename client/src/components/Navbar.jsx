@@ -1,15 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth, useClerk } from "@clerk/clerk-react";
-import { useAppAuth } from "../context/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Home,
   LogOut,
@@ -17,7 +8,19 @@ import {
   User,
   X,
   Loader2,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+import { useAppAuth } from "../context/AuthContext";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const API_BASE = "http://localhost:5000";
 
@@ -25,8 +28,8 @@ function Navbar() {
   const navigate = useNavigate();
   const { getToken } = useAuth();
   const { signOut } = useClerk();
+  const { theme, toggleTheme } = useTheme();
   const { profile, clearProfile } = useAppAuth();
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [history, setHistory] = useState([]);
@@ -74,14 +77,13 @@ function Navbar() {
     temp.length > 1 ? temp.slice(0, temp.length - 1).join(" ") : name;
   return (
     <>
-      {}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
           {}
           <div className="flex items-center gap-3">
             <Badge
               variant="outline"
-              className="border-zinc-700 text-xs font-semibold uppercase tracking-wider"
+              className="border-primary/20 bg-primary/5 text-primary text-xs font-bold uppercase tracking-wider"
             >
               {role}
             </Badge>
@@ -102,11 +104,24 @@ function Navbar() {
               <span className="hidden sm:inline">Home</span>
             </Button>
 
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={toggleTheme}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-[1.2rem] w-[1.2rem]" />
+              ) : (
+                <Moon className="h-[1.2rem] w-[1.2rem]" />
+              )}
+            </Button>
+
             {}
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen((o) => !o)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold text-foreground transition-colors hover:bg-zinc-700"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80 border border-border"
               >
                 {firstLetter}
               </button>
@@ -117,8 +132,8 @@ function Navbar() {
                     className="fixed inset-0 z-40"
                     onClick={() => setIsDropdownOpen(false)}
                   />
-                  <div className="absolute right-0 top-10 z-50 w-56 rounded-lg border border-zinc-800 bg-zinc-950 p-2 shadow-xl">
-                    <div className="mb-2 space-y-0.5 border-b border-zinc-800 px-2 pb-2">
+                  <div className="absolute right-0 top-10 z-50 w-56 rounded-lg border bg-card p-2 shadow-xl">
+                    <div className="mb-2 space-y-0.5 border-b px-2 pb-2">
                       <p className="text-sm font-medium">{name}</p>
                       <p className="text-xs text-muted-foreground">{role}</p>
                       {profile?.mobileNumber && (
@@ -134,7 +149,7 @@ function Navbar() {
                         setIsDropdownOpen(false);
                         loadHistory();
                       }}
-                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-zinc-800 hover:text-foreground"
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
                     >
                       <HistoryIcon className="h-4 w-4" />
                       Booking History
@@ -142,7 +157,7 @@ function Navbar() {
 
                     <button
                       onClick={handleLogout}
-                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-red-400 transition-colors hover:bg-zinc-800"
+                      className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-destructive transition-colors hover:bg-destructive/10"
                     >
                       <LogOut className="h-4 w-4" />
                       Logout
@@ -157,7 +172,7 @@ function Navbar() {
 
       {}
       <Dialog open={showHistory} onOpenChange={setShowHistory}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto border-zinc-800 bg-zinc-950 sm:max-w-lg">
+        <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>My Booking History</DialogTitle>
           </DialogHeader>
@@ -181,7 +196,7 @@ function Navbar() {
                 return (
                   <div
                     key={b._id}
-                    className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-3 space-y-2"
+                    className="rounded-lg border bg-card p-3 space-y-2"
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-sm">

@@ -42,9 +42,9 @@ function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/50 via-background to-background" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background" />
 
-      <Card className="relative z-10 w-full max-w-md border-zinc-800 bg-zinc-950/80 backdrop-blur-sm">
+      <Card className="relative z-10 w-full max-w-md border-border bg-card/80 backdrop-blur-sm shadow-2xl">
         <CardHeader className="space-y-3 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Building2 className="h-7 w-7" />
@@ -61,7 +61,7 @@ function Login() {
           <Button
             variant="outline"
             size="lg"
-            className="w-full gap-3 border-zinc-700 bg-zinc-900 py-6 text-base font-semibold hover:bg-zinc-800"
+            className="w-full gap-3 border-border bg-secondary hover:bg-secondary/80 py-6 text-base font-semibold transition-all"
             onClick={handleGoogleSignIn}
             disabled={signingIn || !isLoaded}
           >

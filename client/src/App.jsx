@@ -16,13 +16,12 @@ const LoadingScreen = () => (
       justifyContent: "center",
       alignItems: "center",
       height: "100vh",
-      color: "var(--text-muted)",
+      color: "#888",
     }}
   >
     Loading…
   </div>
 );
-
 
 function ProtectedRoute({ children }) {
   const { profile, loading, isSignedIn } = useAppAuth();
@@ -30,7 +29,6 @@ function ProtectedRoute({ children }) {
   if (loading) return <LoadingScreen />;
   if (!isSignedIn) return <Navigate to="/" replace />;
 
-  
   if (!profile) return <Navigate to="/" replace />;
 
   if (profile && !profile.approved)
@@ -38,7 +36,6 @@ function ProtectedRoute({ children }) {
 
   return children;
 }
-
 
 function UserRoute({ children }) {
   const { profile, loading } = useAppAuth();
@@ -49,7 +46,6 @@ function UserRoute({ children }) {
 
   return <ProtectedRoute>{children}</ProtectedRoute>;
 }
-
 
 function AdminRoute({ children }) {
   const { profile, loading } = useAppAuth();
