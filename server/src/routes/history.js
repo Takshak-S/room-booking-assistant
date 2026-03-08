@@ -5,9 +5,7 @@ import BookingEvent from "../models/bookingevent.model.js";
 
 const router = express.Router();
 
-/**
- * GET /bookings/:bookingId/history — view audit trail for a booking
- */
+
 router.get("/bookings/:bookingId/history", clerkAuth, async (req, res) => {
   const userId = req.dbUser._id;
   const isAdmin = req.dbUser.role === "ADMIN";
@@ -20,7 +18,7 @@ router.get("/bookings/:bookingId/history", clerkAuth, async (req, res) => {
       return res.status(404).json({ error: "Booking not found" });
     }
 
-    // Authorization: only creator or admin can view
+    
     if (!isAdmin && !booking.userId.equals(userId)) {
       return res.status(403).json({ error: "Access denied" });
     }

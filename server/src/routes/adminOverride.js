@@ -6,9 +6,7 @@ import BookingEvent from "../models/bookingevent.model.js";
 
 const router = express.Router();
 
-/**
- * POST /admin/bookings/:bookingId/override
- */
+
 router.post(
   "/admin/bookings/:bookingId/override",
   clerkAuth,
@@ -23,7 +21,7 @@ router.post(
     }
 
     try {
-      // Fetch original booking
+      
       const original = await Booking.findById(bookingId);
 
       if (!original) {
@@ -36,7 +34,7 @@ router.post(
         });
       }
 
-      // Conflict check for new slot
+      
       const conflict = await Booking.findOne({
         resourceId: new_resource_id,
         status: { $in: ["PENDING", "APPROVED"] },
@@ -50,7 +48,7 @@ router.post(
         });
       }
 
-      // Create new booking
+      
       const newBooking = await Booking.create({
         resourceId: new_resource_id,
         userId: original.userId,
@@ -62,11 +60,11 @@ router.post(
         approvedAt: new Date(),
       });
 
-      // Mark original as cancelled
+      
       original.status = "CANCELLED";
       await original.save();
 
-      // History: overridden
+      
       await BookingEvent.create({
         bookingId,
         eventType: "CANCELLED",
@@ -78,7 +76,7 @@ router.post(
         },
       });
 
-      // History: new booking created
+      
       await BookingEvent.create({
         bookingId: newBooking._id,
         eventType: "CREATED",

@@ -63,7 +63,7 @@ function AdminDashboard() {
     if (profile && profile.role !== "ADMIN") navigate("/home");
   }, [profile, navigate]);
 
-  /* helpers */
+  
   const authFetch = useCallback(
     async (url) => {
       const token = await getToken();
@@ -89,7 +89,7 @@ function AdminDashboard() {
     [getToken],
   );
 
-  /* loaders */
+  
   const loadPending = useCallback(async () => {
     setPendingLoading(true);
     try {
@@ -173,13 +173,13 @@ function AdminDashboard() {
     }
   };
 
-  /* auto-load pending + users on mount */
+  
   useEffect(() => {
     loadPending();
     loadUsers();
   }, [loadPending, loadUsers]);
 
-  /* stats */
+  
   const totalUsers = allUsers.length;
   const approvedCount = allUsers.filter((u) => u.approved).length;
   const pendingCount = pendingUsers.length;
@@ -272,7 +272,7 @@ function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          {/* =============== PENDING =============== */}
+          {}
           <TabsContent value="pending" className="mt-4">
             <Card className="border-zinc-800 bg-zinc-950/60">
               <CardContent className="p-4">
@@ -328,9 +328,9 @@ function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* =============== USERS =============== */}
+          {}
           <TabsContent value="users" className="mt-4 space-y-4">
-            {/* Stats */}
+            {}
             <div className="grid grid-cols-3 gap-3">
               {[
                 {
@@ -422,7 +422,7 @@ function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* =============== BOOKINGS =============== */}
+          {}
           <TabsContent value="bookings" className="mt-4">
             <Card className="border-zinc-800 bg-zinc-950/60">
               <CardContent className="p-4">
@@ -579,7 +579,7 @@ function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* =============== VENUE OCCUPANCY =============== */}
+          {}
           <TabsContent value="venue" className="mt-4">
             <Card className="border-zinc-800 bg-zinc-950/60">
               <CardContent className="p-4">

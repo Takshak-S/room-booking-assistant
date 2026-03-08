@@ -80,7 +80,7 @@ async function seedData() {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("Connected to MongoDB for seeding...");
 
-    // Clear existing data (optional, but good for consistent seating)
+    
     await Resource.deleteMany({});
     console.log("Cleared existing resources.");
 

@@ -1,4 +1,4 @@
-/* Cyberpunk Neon Animations */
+
 @keyframes ac-gridMove {
   0% {
     background-position: 0 0;
@@ -53,7 +53,7 @@
   overflow: hidden;
 }
 
-/* Animated Neon Grid Background */
+
 .ac-pageWrapper::before {
   content: "";
   position: absolute;
@@ -70,7 +70,7 @@
   opacity: 0.3;
 }
 
-/* Radial gradient overlay */
+
 .ac-pageWrapper::after {
   content: "";
   position: absolute;

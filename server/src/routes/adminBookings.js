@@ -6,9 +6,7 @@ import BookingEvent from "../models/bookingevent.model.js";
 
 const router = express.Router();
 
-/**
- * GET /admin/bookings/pending — list all pending bookings
- */
+
 router.get(
   "/admin/bookings/pending",
   clerkAuth,
@@ -28,9 +26,7 @@ router.get(
   },
 );
 
-/**
- * POST /admin/bookings/:bookingId/approve
- */
+
 router.post(
   "/admin/bookings/:bookingId/approve",
   clerkAuth,
@@ -52,7 +48,7 @@ router.post(
           .json({ error: "Booking is not pending approval" });
       }
 
-      // Re-check conflicts
+      
       const conflict = await Booking.findOne({
         resourceId: booking.resourceId,
         _id: { $ne: booking._id },
@@ -86,9 +82,7 @@ router.post(
   },
 );
 
-/**
- * POST /admin/bookings/:bookingId/reject
- */
+
 router.post(
   "/admin/bookings/:bookingId/reject",
   clerkAuth,
@@ -136,9 +130,7 @@ router.post(
   },
 );
 
-/**
- * GET /admin/bookings/overrides — list override requests
- */
+
 router.get(
   "/admin/bookings/overrides",
   clerkAuth,
@@ -157,9 +149,7 @@ router.get(
   },
 );
 
-/**
- * POST /admin/bookings/:bookingId/approve-override
- */
+
 router.post(
   "/admin/bookings/:bookingId/approve-override",
   clerkAuth,
@@ -176,7 +166,7 @@ router.post(
           .json({ error: "Override request not found or not pending" });
       }
 
-      // Find all conflicting bookings
+      
       const conflicts = await Booking.find({
         resourceId: booking.resourceId,
         status: { $in: ["PENDING", "APPROVED"] },
@@ -185,7 +175,7 @@ router.post(
         _id: { $ne: booking._id },
       });
 
-      // Cancel conflicts
+      
       for (const c of conflicts) {
         c.status = "CANCELLED";
         await c.save();
@@ -197,7 +187,7 @@ router.post(
         });
       }
 
-      // Approve this override
+      
       booking.status = "APPROVED";
       booking.approvedBy = adminId;
       booking.approvedAt = new Date();

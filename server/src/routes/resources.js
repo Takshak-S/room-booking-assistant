@@ -6,9 +6,7 @@ import Booking from "../models/booking.model.js";
 
 const router = express.Router();
 
-/**
- * GET /resources — list resources with optional filters
- */
+
 router.get("/resources", clerkAuth, async (req, res) => {
   const { type, min_capacity } = req.query;
 
@@ -27,9 +25,7 @@ router.get("/resources", clerkAuth, async (req, res) => {
   }
 });
 
-/**
- * GET /resources/availability — resources available in a time window
- */
+
 router.get("/resources/availability", clerkAuth, async (req, res) => {
   const { start_time, end_time, type, min_capacity, exclude_booking_id } =
     req.query;
@@ -54,7 +50,7 @@ router.get("/resources/availability", clerkAuth, async (req, res) => {
 
     const resourceIds = resources.map((r) => r._id);
 
-    // Find conflicting bookings
+    
     const conflictFilter = {
       resourceId: { $in: resourceIds },
       status: { $in: ["PENDING", "APPROVED"] },
@@ -81,9 +77,7 @@ router.get("/resources/availability", clerkAuth, async (req, res) => {
   }
 });
 
-/**
- * GET /resources/:resourceId — single resource
- */
+
 router.get("/resources/:resourceId", clerkAuth, async (req, res) => {
   try {
     const resource = await Resource.findById(req.params.resourceId);
@@ -99,9 +93,7 @@ router.get("/resources/:resourceId", clerkAuth, async (req, res) => {
   }
 });
 
-/**
- * POST /admin/resources — create a resource (admin only)
- */
+
 router.post("/admin/resources", clerkAuth, requireAdmin, async (req, res) => {
   const { name, type, capacity, location, amenities, tags, description } =
     req.body;

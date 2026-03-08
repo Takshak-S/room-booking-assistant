@@ -2,14 +2,7 @@ import { requireAuth, getAuth, clerkClient } from "@clerk/express";
 import User from "../models/user.model.js";
 import { inferRoleFromEmail } from "../utils/inferRole.js";
 
-/**
- * Clerk auth middleware chain:
- * 1. requireAuth() — verifies the Clerk JWT, returns 401 if invalid
- * 2. attachDbUser  — looks up (or creates) the MongoDB User by Clerk userId
- *
- * Usage in routes:  router.get("/path", clerkAuth, async (req, res) => { ... })
- * Access user via:  req.dbUser
- */
+
 async function attachDbUser(req, res, next) {
   try {
     const { userId } = getAuth(req);
@@ -18,11 +11,11 @@ async function attachDbUser(req, res, next) {
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // Look up existing user by Clerk ID
+    
     let user = await User.findOne({ firebaseUid: userId });
 
     if (!user) {
-      // First login — fetch profile from Clerk and auto-create
+      
       const clerkUser = await clerkClient.users.getUser(userId);
       const email = clerkUser.emailAddresses?.[0]?.emailAddress || "";
       const name =
@@ -52,5 +45,5 @@ async function attachDbUser(req, res, next) {
   }
 }
 
-// Export a middleware array: first verify Clerk JWT, then attach DB user
+
 export const clerkAuth = [requireAuth(), attachDbUser];

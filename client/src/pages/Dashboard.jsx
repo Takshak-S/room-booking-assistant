@@ -83,7 +83,7 @@ function Dashboard() {
       const b = location.state.editBooking;
       setSelectedResource(b.resourceId);
       setEditingBooking(b);
-      // Clear location state
+      
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location, navigate]);
@@ -116,7 +116,7 @@ function Dashboard() {
         />
       </main>
 
-      {/* ---- BOOKING DIALOG ---- */}
+      {}
       <Dialog
         open={!!selectedResource}
         onOpenChange={(open) => {

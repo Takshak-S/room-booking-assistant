@@ -5,7 +5,17 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import { useAuth, useUser } from "@clerk/clerk-react";
+import { useAuth, useUser, useClerk } from "@clerk/clerk-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ShieldAlert } from "lucide-react";
 
 const AuthContext = createContext(null);
 
@@ -25,7 +35,7 @@ function writeCache(profile) {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(profile));
   } catch {
-    /* ignore */
+    
   }
 }
 
@@ -39,6 +49,8 @@ export function AuthProvider({ children }) {
 
   const [profile, setProfile] = useState(readCache);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null); 
+  const { signOut } = useClerk();
 
   const fetchProfile = useCallback(async () => {
     if (!isSignedIn) {
@@ -55,6 +67,9 @@ export function AuthProvider({ children }) {
       });
 
       if (!res.ok) {
+        if (res.status === 403) {
+          setAuthError("domain");
+        }
         setProfile(null);
         clearCache();
         setLoading(false);
@@ -72,7 +87,7 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, [isSignedIn, getToken]);
 
-  // Fetch profile when auth state changes
+  
   useEffect(() => {
     if (!authLoaded || !userLoaded) return;
     fetchProfile();
@@ -84,10 +99,10 @@ export function AuthProvider({ children }) {
   }, [fetchProfile]);
 
   const value = {
-    profile, // { id, role, approved, name, email, mobileNumber } or null
-    loading, // true while fetching
-    isSignedIn, // Clerk sign-in state
-    clerkUser, // raw Clerk user object
+    profile, 
+    loading, 
+    isSignedIn, 
+    clerkUser, 
     refreshProfile,
     clearProfile: () => {
       setProfile(null);
@@ -95,7 +110,57 @@ export function AuthProvider({ children }) {
     },
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const handleSignOut = async () => {
+    setAuthError(null);
+    await signOut();
+    clearCache();
+    setProfile(null);
+    window.location.href = "/";
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <AuthErrorDialog
+        open={authError === "domain"}
+        onSignOut={handleSignOut}
+      />
+    </AuthContext.Provider>
+  );
+}
+
+function AuthErrorDialog({ open, onSignOut }) {
+  return (
+    <Dialog open={open} onOpenChange={() => {}}>
+      <DialogContent
+        className="sm:max-w-md border-zinc-800 bg-zinc-950 text-foreground"
+        showCloseButton={false}
+      >
+        <DialogHeader className="flex flex-col items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-900/20 text-red-500">
+            <ShieldAlert className="h-6 w-6" />
+          </div>
+          <DialogTitle className="text-xl font-bold">
+            Unauthorized Domain
+          </DialogTitle>
+          <DialogDescription className="text-center text-zinc-400">
+            Your email domain is not authorized to access this portal. Please
+            sign in using your{" "}
+            <span className="text-zinc-200 font-medium">University Email</span>{" "}
+            account.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="mt-4">
+          <Button
+            className="w-full bg-red-600 hover:bg-red-700 font-bold"
+            onClick={onSignOut}
+          >
+            Back
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function useAppAuth() {

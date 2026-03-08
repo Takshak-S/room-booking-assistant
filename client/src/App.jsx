@@ -23,41 +23,40 @@ const LoadingScreen = () => (
   </div>
 );
 
-/**
- * Base guard: signed in + approved.
- */
+
 function ProtectedRoute({ children }) {
   const { profile, loading, isSignedIn } = useAppAuth();
 
   if (loading) return <LoadingScreen />;
   if (!isSignedIn) return <Navigate to="/" replace />;
+
+  
+  if (!profile) return <Navigate to="/" replace />;
+
   if (profile && !profile.approved)
     return <Navigate to="/waiting-approval" replace />;
 
   return children;
 }
 
-/**
- * User-only routes: ADMIN role is redirected to /admin.
- */
+
 function UserRoute({ children }) {
   const { profile, loading } = useAppAuth();
 
   if (loading) return <LoadingScreen />;
-  if (profile?.role === "ADMIN") return <Navigate to="/admin" replace />;
+  if (!profile) return <Navigate to="/" replace />;
+  if (profile.role === "ADMIN") return <Navigate to="/admin" replace />;
 
   return <ProtectedRoute>{children}</ProtectedRoute>;
 }
 
-/**
- * Admin-only routes: non-ADMIN role is redirected to /home.
- */
+
 function AdminRoute({ children }) {
   const { profile, loading } = useAppAuth();
 
   if (loading) return <LoadingScreen />;
-  if (profile && profile.role !== "ADMIN")
-    return <Navigate to="/home" replace />;
+  if (!profile) return <Navigate to="/" replace />;
+  if (profile.role !== "ADMIN") return <Navigate to="/home" replace />;
 
   return <ProtectedRoute>{children}</ProtectedRoute>;
 }

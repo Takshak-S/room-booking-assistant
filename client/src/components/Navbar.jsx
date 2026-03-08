@@ -74,10 +74,10 @@ function Navbar() {
     temp.length > 1 ? temp.slice(0, temp.length - 1).join(" ") : name;
   return (
     <>
-      {/* ---- TOP BAR ---- */}
+      {}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-          {/* Left: user info */}
+          {}
           <div className="flex items-center gap-3">
             <Badge
               variant="outline"
@@ -90,7 +90,7 @@ function Navbar() {
             </span>
           </div>
 
-          {/* Right: actions */}
+          {}
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -102,7 +102,7 @@ function Navbar() {
               <span className="hidden sm:inline">Home</span>
             </Button>
 
-            {/* Profile dropdown */}
+            {}
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen((o) => !o)}
@@ -155,7 +155,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* ---- BOOKING HISTORY DIALOG ---- */}
+      {}
       <Dialog open={showHistory} onOpenChange={setShowHistory}>
         <DialogContent className="max-h-[80vh] overflow-y-auto border-zinc-800 bg-zinc-950 sm:max-w-lg">
           <DialogHeader>

@@ -71,7 +71,7 @@ function Home() {
       <Navbar />
 
       <main className="mx-auto max-w-6xl space-y-20 px-4 pb-20 pt-24">
-        {/* ====== HERO ====== */}
+        {}
         <section className="flex flex-col items-center space-y-6 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <Building2 className="h-8 w-8" />
@@ -98,7 +98,7 @@ function Home() {
 
         <Separator />
 
-        {/* ====== FEATURES ====== */}
+        {}
         <section className="space-y-10">
           <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
             Key Features
@@ -128,7 +128,7 @@ function Home() {
 
         <Separator />
 
-        {/* ====== BENEFITS ====== */}
+        {}
         <section className="space-y-8">
           <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
             Why Use VITMAS?

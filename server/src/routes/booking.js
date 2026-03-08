@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import { clerkAuth } from "../middleware/auth.js";
 import Booking from "../models/booking.model.js";
 import BookingEvent from "../models/bookingevent.model.js";
@@ -6,9 +7,6 @@ import Resource from "../models/resource.model.js";
 
 const router = express.Router();
 
-/**
- * GET /bookings/history — user's own bookings
- */
 router.get("/bookings/history", clerkAuth, async (req, res) => {
   try {
     const userId = req.dbUser._id;
@@ -24,9 +22,6 @@ router.get("/bookings/history", clerkAuth, async (req, res) => {
   }
 });
 
-/**
- * POST /bookings — create a new booking
- */
 router.post("/bookings", clerkAuth, async (req, res) => {
   const userId = req.dbUser._id;
   const {
@@ -47,52 +42,78 @@ router.post("/bookings", clerkAuth, async (req, res) => {
   }
 
   try {
-    // Check for conflicts
-    const conflict = await Booking.findOne({
-      resourceId: resource_id,
-      status: { $in: ["PENDING", "APPROVED"] },
-      startTime: { $lt: new Date(end_time) },
-      endTime: { $gt: new Date(start_time) },
-    });
-
-    if (conflict && !is_override) {
-      return res.status(409).json({
-        error: "Time slot already booked or pending approval",
-      });
+    const resource = await Resource.findById(resource_id);
+    if (!resource || !resource.available) {
+      return res
+        .status(404)
+        .json({ error: "Resource not found or unavailable" });
     }
 
-    const booking = await Booking.create({
-      resourceId: resource_id,
-      userId,
-      startTime: new Date(start_time),
-      endTime: new Date(end_time),
-      purpose,
-      status: is_override ? "OVERRIDE_PENDING" : "PENDING",
-      overrideReason: is_override ? override_reason : undefined,
+    const session = await mongoose.startSession();
+    let booking_id;
+    let b_status;
+
+    await session.withTransaction(async () => {
+      const conflict = await Booking.findOne({
+        resourceId: resource_id,
+        status: { $in: ["PENDING", "APPROVED"] },
+        startTime: { $lt: new Date(end_time) },
+        endTime: { $gt: new Date(start_time) },
+      }).session(session);
+
+      if (conflict && !is_override) {
+        throw new Error("CONFLICT");
+      }
+
+      const booking = await Booking.create(
+        [
+          {
+            resourceId: resource_id,
+            userId,
+            startTime: new Date(start_time),
+            endTime: new Date(end_time),
+            purpose,
+            status: is_override ? "OVERRIDE_PENDING" : "PENDING",
+            overrideReason: is_override ? override_reason : undefined,
+          },
+        ],
+        { session },
+      );
+
+      booking_id = booking[0]._id;
+      b_status = booking[0].status;
+
+      await BookingEvent.create(
+        [
+          {
+            bookingId: booking_id,
+            eventType: "CREATED",
+            createdBy: userId,
+            metadata: { purpose },
+          },
+        ],
+        { session },
+      );
     });
 
-    // Audit event
-    await BookingEvent.create({
-      bookingId: booking._id,
-      eventType: "CREATED",
-      createdBy: userId,
-      metadata: { purpose },
-    });
+    await session.endSession();
 
     res.json({
       success: true,
-      booking_id: booking._id,
-      status: booking.status,
+      booking_id,
+      status: b_status,
     });
   } catch (err) {
+    if (err.message === "CONFLICT") {
+      return res
+        .status(409)
+        .json({ error: "Time slot already booked or pending approval" });
+    }
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
 
-/**
- * POST /bookings/:id/cancel
- */
 router.post("/bookings/:id/cancel", clerkAuth, async (req, res) => {
   const userId = req.dbUser._id;
   const { id } = req.params;
@@ -124,9 +145,6 @@ router.post("/bookings/:id/cancel", clerkAuth, async (req, res) => {
   }
 });
 
-/**
- * PUT /bookings/:id — edit a booking
- */
 router.put("/bookings/:id", clerkAuth, async (req, res) => {
   const userId = req.dbUser._id;
   const { id } = req.params;
@@ -147,41 +165,59 @@ router.put("/bookings/:id", clerkAuth, async (req, res) => {
     const finalStart = start_time ? new Date(start_time) : booking.startTime;
     const finalEnd = end_time ? new Date(end_time) : booking.endTime;
 
-    // Check for conflicts
-    const conflict = await Booking.findOne({
-      _id: { $ne: id },
-      resourceId: finalResource,
-      status: { $in: ["PENDING", "APPROVED"] },
-      startTime: { $lt: finalEnd },
-      endTime: { $gt: finalStart },
-    });
-
-    if (conflict) {
-      return res.status(409).json({
-        error: "Time slot already booked or pending approval",
-      });
+    const resource = await Resource.findById(finalResource);
+    if (!resource || !resource.available) {
+      return res
+        .status(404)
+        .json({ error: "Resource not found or unavailable" });
     }
 
-    if (start_time) booking.startTime = new Date(start_time);
-    if (end_time) booking.endTime = new Date(end_time);
-    if (resource_id) booking.resourceId = resource_id;
-    booking.status = "PENDING";
-    await booking.save();
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+      const conflict = await Booking.findOne({
+        _id: { $ne: id },
+        resourceId: finalResource,
+        status: { $in: ["PENDING", "APPROVED"] },
+        startTime: { $lt: finalEnd },
+        endTime: { $gt: finalStart },
+      }).session(session);
 
-    await BookingEvent.create({
-      bookingId: id,
-      eventType: "CREATED",
-      createdBy: userId,
-      metadata: {
-        note: "Booking edited",
-        startTime: start_time,
-        endTime: end_time,
-        resourceId: resource_id,
-      },
+      if (conflict) {
+        throw new Error("CONFLICT");
+      }
+
+      if (start_time) booking.startTime = new Date(start_time);
+      if (end_time) booking.endTime = new Date(end_time);
+      if (resource_id) booking.resourceId = resource_id;
+      booking.status = "PENDING";
+      await booking.save({ session });
+
+      await BookingEvent.create(
+        [
+          {
+            bookingId: id,
+            eventType: "CREATED",
+            createdBy: userId,
+            metadata: {
+              note: "Booking edited",
+              startTime: start_time,
+              endTime: end_time,
+              resourceId: resource_id,
+            },
+          },
+        ],
+        { session },
+      );
     });
 
+    await session.endSession();
     res.json({ success: true });
   } catch (err) {
+    if (err.message === "CONFLICT") {
+      return res
+        .status(409)
+        .json({ error: "Time slot already booked or pending approval" });
+    }
     console.error(err);
     res.status(500).json({ error: err.message });
   }

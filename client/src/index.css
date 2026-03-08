@@ -41,7 +41,7 @@
   --color-chart-5: var(--chart-5);
 }
 
-/*  Dark theme — always on  */
+
 :root {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

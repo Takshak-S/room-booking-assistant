@@ -14,7 +14,7 @@ function ResourceSearchFilter({
 
   return (
     <div className="space-y-3">
-      {/* Search + toggle */}
+      {}
       <div className="flex gap-2">
         <Input
           type="text"
@@ -37,7 +37,7 @@ function ResourceSearchFilter({
         </Button>
       </div>
 
-      {/* Filter panel */}
+      {}
       {showFilters && (
         <div className="grid gap-3 rounded-lg border border-zinc-800 bg-zinc-950/60 p-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-1.5">

@@ -29,7 +29,7 @@ function BookingForm({
 }) {
   const { getToken } = useAuth();
 
-  const [date, setDate] = useState(null); // Now a Date object
+  const [date, setDate] = useState(null); 
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
@@ -138,7 +138,7 @@ function BookingForm({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        {/* Date Selection */}
+        {}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Date</Label>
           <Popover>
@@ -169,7 +169,7 @@ function BookingForm({
           </Popover>
         </div>
 
-        {/* Time Selection */}
+        {}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-sm font-medium">Start Time</Label>
@@ -242,7 +242,7 @@ function BookingForm({
         </div>
       </div>
 
-      {/* Status messages */}
+      {}
       <div className="min-h-[60px]">
         {status === "invalid" && (
           <div className="flex items-center gap-3 rounded-lg border border-red-900 bg-red-950/30 p-4 text-sm text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">

@@ -4,9 +4,7 @@ import User from "../models/user.model.js";
 
 const router = express.Router();
 
-/**
- * STUDENT PROFILE COMPLETION
- */
+
 router.post("/profile/student", clerkAuth, async (req, res) => {
   const user = req.dbUser;
   const { name, register_number, mobile_number } = req.body;
@@ -19,7 +17,7 @@ router.post("/profile/student", clerkAuth, async (req, res) => {
     return res.status(403).json({ error: "Not a student account" });
   }
 
-  // Update user document directly
+  
   user.name = name;
   user.mobileNumber = mobile_number;
   await user.save();
@@ -30,9 +28,7 @@ router.post("/profile/student", clerkAuth, async (req, res) => {
   });
 });
 
-/**
- * FACULTY PROFILE COMPLETION
- */
+
 router.post("/profile/faculty", clerkAuth, async (req, res) => {
   const user = req.dbUser;
   const { name, employee_id, school, mobile_number } = req.body;
@@ -45,7 +41,7 @@ router.post("/profile/faculty", clerkAuth, async (req, res) => {
     return res.status(403).json({ error: "Not a faculty account" });
   }
 
-  // Update user document directly
+  
   user.name = name;
   user.mobileNumber = mobile_number;
   await user.save();

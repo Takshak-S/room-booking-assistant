@@ -7,7 +7,7 @@ const HOURS = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
 const ClockPicker = ({ value, onChange, label }) => {
-  const [mode, setMode] = useState("hours"); // 'hours' or 'minutes'
+  const [mode, setMode] = useState("hours"); 
   const [tempHour, setTempHour] = useState(12);
   const [tempMinute, setTempMinute] = useState(0);
   const [tempAmPm, setTempAmPm] = useState("AM");
@@ -61,7 +61,7 @@ const ClockPicker = ({ value, onChange, label }) => {
 
   return (
     <div className="flex flex-col items-center p-4 bg-zinc-950 rounded-xl border border-zinc-800 shadow-2xl w-[280px]">
-      {/* Header / Display */}
+      {}
       <div className="flex items-center justify-between w-full mb-6">
         <div className="flex items-baseline gap-1">
           <button
@@ -114,12 +114,12 @@ const ClockPicker = ({ value, onChange, label }) => {
         </div>
       </div>
 
-      {/* Clock Face */}
+      {}
       <div className="relative w-48 h-48 rounded-full bg-zinc-900 flex items-center justify-center border border-zinc-800">
-        {/* Center Dot */}
+        {}
         <div className="absolute w-2 h-2 rounded-full bg-primary z-20" />
 
-        {/* The Hand */}
+        {}
         <motion.div
           className="absolute origin-bottom w-0.5 bg-primary z-10"
           style={{
@@ -133,7 +133,7 @@ const ClockPicker = ({ value, onChange, label }) => {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-primary/20 border-2 border-primary" />
         </motion.div>
 
-        {/* Numbers */}
+        {}
         <AnimatePresence mode="wait">
           <motion.div
             key={mode}

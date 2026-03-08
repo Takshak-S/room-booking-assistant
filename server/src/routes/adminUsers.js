@@ -6,9 +6,7 @@ import Booking from "../models/booking.model.js";
 
 const router = express.Router();
 
-/**
- * GET /admin/users/pending — users awaiting approval
- */
+
 router.get(
   "/admin/users/pending",
   clerkAuth,
@@ -26,9 +24,7 @@ router.get(
   },
 );
 
-/**
- * POST /admin/users/:userId/approve — approve a user
- */
+
 router.post(
   "/admin/users/:userId/approve",
   clerkAuth,
@@ -51,9 +47,7 @@ router.post(
   },
 );
 
-/**
- * GET /admin/users — all users (with optional role filter)
- */
+
 router.get("/admin/users", clerkAuth, requireAdmin, async (req, res) => {
   try {
     const filter = {};
@@ -67,10 +61,7 @@ router.get("/admin/users", clerkAuth, requireAdmin, async (req, res) => {
   }
 });
 
-/**
- * GET /admin/bookings — all bookings (with optional status / date filters)
- *   ?status=APPROVED&from=2026-03-01&to=2026-03-07
- */
+
 router.get("/admin/bookings", clerkAuth, requireAdmin, async (req, res) => {
   try {
     const filter = {};
@@ -94,10 +85,7 @@ router.get("/admin/bookings", clerkAuth, requireAdmin, async (req, res) => {
   }
 });
 
-/**
- * GET /admin/bookings/by-date — date-wise venue occupancy
- *   ?date=2026-03-07  (defaults to today)
- */
+
 router.get(
   "/admin/bookings/by-date",
   clerkAuth,
