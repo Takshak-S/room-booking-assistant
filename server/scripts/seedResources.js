@@ -4,72 +4,66 @@ import Resource from "../src/models/resource.model.js";
 
 dotenv.config();
 
-const resources = [
-  {
-    name: "Sensing and IoT Lab",
-    type: "LABORATORY",
-    capacity: 40,
-    location: "SJT 4th Floor",
-    amenities: ["PROJECTOR", "AC", "WIFI", "POWER_OUTLETS"],
-    description: "Equipped with latest IoT kits and sensors for research.",
-    tags: ["WORKSHOP_FRIENDLY", "COLLABORATIVE_SPACE"],
-  },
-  {
-    name: "Netaji Subhash Chandra Bose Auditorium",
-    type: "AUDITORIUM",
-    capacity: 250,
-    location: "SJT Ground Floor",
-    amenities: ["PROJECTOR", "AC", "WIFI", "SPEAKERS", "MICROPHONE"],
-    description: "Grand auditorium for seminars and guest lectures.",
-    tags: ["LECTURE_SETUP", "WORKSHOP_FRIENDLY"],
-  },
-  {
-    name: "Robotics and Automation Lab",
-    type: "LABORATORY",
-    capacity: 35,
-    location: "TT 2nd Floor",
-    amenities: ["PROJECTOR", "AC", "WIFI", "POWER_OUTLETS"],
-    description:
-      "Advanced robotics lab with robotic arms and automation tools.",
-    tags: ["HACKATHON_READY", "COLLABORATIVE_SPACE"],
-  },
-  {
-    name: "Smart Classroom 101",
-    type: "CLASSROOM",
-    capacity: 60,
-    location: "PRP 1st Floor",
-    amenities: ["PROJECTOR", "AC", "WIFI", "WHITEBOARD"],
-    description: "Modern smart classroom with interactive boards.",
-    tags: ["LECTURE_SETUP"],
-  },
-  {
-    name: "Indoor Sports Complex",
-    type: "SPORTS",
-    capacity: 100,
-    location: "Near Men's Hostel",
-    amenities: ["WIFI"],
-    description: "Facilities for badminton, table tennis, and carrom.",
-    tags: ["SPORTS_EVENT"],
-  },
-  {
-    name: "Hackers Den",
-    type: "LABORATORY",
-    capacity: 50,
-    location: "SJT 7th Floor",
-    amenities: ["PROJECTOR", "AC", "WIFI", "POWER_OUTLETS"],
-    description: "Dedicated space for coding contests and hackathons.",
-    tags: ["HACKATHON_READY", "OVERNIGHT_ACCESS", "COLLABORATIVE_SPACE"],
-  },
-  {
-    name: "Discussion Room A",
-    type: "CLASSROOM",
-    capacity: 15,
-    location: "Library 2nd Floor",
-    amenities: ["AC", "WIFI", "WHITEBOARD", "POWER_OUTLETS"],
-    description: "Small room for group discussions and team meetings.",
-    tags: ["MEETING_ROOM", "COLLABORATIVE_SPACE"],
-  },
+const types = ["CLASSROOM", "LABORATORY", "AUDITORIUM", "SPORTS"];
+const locations = ["SJT", "TT", "PRP", "GDN", "M-Block", "L-Block"];
+const allAmenities = [
+  "PROJECTOR",
+  "AC",
+  "WIFI",
+  "WHITEBOARD",
+  "SPEAKERS",
+  "MICROPHONE",
+  "POWER_OUTLETS",
 ];
+const allTags = [
+  "HACKATHON_READY",
+  "WORKSHOP_FRIENDLY",
+  "LECTURE_SETUP",
+  "MEETING_ROOM",
+  "SPORTS_EVENT",
+  "OVERNIGHT_ACCESS",
+  "COLLABORATIVE_SPACE",
+];
+
+function generateResources(count) {
+  const generated = [];
+  for (let i = 1; i <= count; i++) {
+    const type = types[Math.floor(Math.random() * types.length)];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    const floor = Math.floor(Math.random() * 8) + 1;
+
+    let capacity;
+    if (type === "AUDITORIUM") capacity = 150 + Math.floor(Math.random() * 200);
+    else if (type === "LABORATORY")
+      capacity = 30 + Math.floor(Math.random() * 40);
+    else if (type === "SPORTS") capacity = 50 + Math.floor(Math.random() * 100);
+    else capacity = 20 + Math.floor(Math.random() * 80);
+
+    const name = `${type.charAt(0) + type.slice(1).toLowerCase()} ${100 + i} (${location})`;
+
+    // Pick 3-5 random amenities
+    const amenities = allAmenities
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3 + Math.floor(Math.random() * 3));
+
+    // Pick 1-2 random tags
+    const tags = allTags
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 1 + Math.floor(Math.random() * 2));
+
+    generated.push({
+      name,
+      type,
+      capacity,
+      location: `${location} ${floor}th Floor`,
+      amenities,
+      description: `A well-equipped ${type.toLowerCase()} located in ${location}.`,
+      tags,
+      available: true,
+    });
+  }
+  return generated;
+}
 
 async function seedData() {
   try {
@@ -77,17 +71,20 @@ async function seedData() {
       throw new Error("MONGODB_URI is not defined");
     }
 
+    console.log("Connecting to MongoDB...");
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Connected to MongoDB for seeding...");
+    console.log("Connected to MongoDB for seeding.");
 
-    
     await Resource.deleteMany({});
     console.log("Cleared existing resources.");
 
+    const resources = generateResources(100);
     await Resource.insertMany(resources);
-    console.log("Successfully seeded resources!");
+    console.log(`Successfully seeded ${resources.length} resources!`);
 
-    mongoose.disconnect();
+    await mongoose.disconnect();
+    console.log("Disconnected from MongoDB.");
+    process.exit(0);
   } catch (error) {
     console.error("Error seeding data:", error);
     process.exit(1);

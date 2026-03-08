@@ -65,11 +65,15 @@ export function AuthProvider({ children }) {
       });
 
       if (!res.ok) {
+        console.error("Profile fetch failed:", res.status);
         if (res.status === 403) {
           setAuthError("domain");
         }
-        setProfile(null);
-        clearCache();
+        // Only clear profile if definitely unauthorized or unauthenticated
+        if (res.status === 401 || res.status === 403 || res.status === 404) {
+          setProfile(null);
+          clearCache();
+        }
         setLoading(false);
         return;
       }
@@ -77,9 +81,16 @@ export function AuthProvider({ children }) {
       const data = await res.json();
       setProfile(data);
       writeCache(data);
-    } catch {
-      setProfile(null);
-      clearCache();
+    } catch (err) {
+      console.error("Network error fetching profile:", err);
+      // If it's a connection refused, keep the cached profile if we have one
+      // to prevent an aggressive redirect loop
+      const cached = readCache();
+      if (cached) {
+        setProfile(cached);
+      } else {
+        setProfile(null);
+      }
     }
 
     setLoading(false);

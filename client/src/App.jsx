@@ -8,6 +8,7 @@ import StudentProfileForm from "./pages/StudentProfileForm";
 import FacultyProfileForm from "./pages/FacultyProfileForm";
 import WaitingApproval from "./pages/WaitingApproval";
 import AdminDashboard from "./pages/AdminDashboard";
+import ChatAssistant from "./components/ChatAssistant";
 
 const LoadingScreen = () => (
   <div
@@ -110,11 +111,18 @@ function AppRoutes() {
   );
 }
 
+function ChatAssistantWrapper() {
+  const { isSignedIn, profile } = useAppAuth();
+  if (!isSignedIn || !profile) return null;
+  return <ChatAssistant />;
+}
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <ChatAssistantWrapper />
       </AuthProvider>
     </BrowserRouter>
   );

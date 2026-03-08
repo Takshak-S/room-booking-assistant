@@ -11,8 +11,7 @@ import adminBookingsRoutes from "./routes/adminBookings.js";
 import historyRoutes from "./routes/history.js";
 import resourceRoutes from "./routes/resources.js";
 import adminUsersRoutes from "./routes/adminUsers.js";
-
-dotenv.config();
+import aiRoutes from "./routes/ai.js";
 
 const app = express();
 
@@ -28,6 +27,7 @@ app.use("/api", adminBookingsRoutes);
 app.use("/api", historyRoutes);
 app.use("/api", resourceRoutes);
 app.use("/api", adminUsersRoutes);
+app.use("/api", aiRoutes);
 
 app.get("/api/test", (req, res) => {
   res.json({ ok: true });
