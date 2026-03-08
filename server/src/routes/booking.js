@@ -29,7 +29,14 @@ router.get("/bookings/history", clerkAuth, async (req, res) => {
  */
 router.post("/bookings", clerkAuth, async (req, res) => {
   const userId = req.dbUser._id;
-  const { resource_id, start_time, end_time, purpose } = req.body;
+  const {
+    resource_id,
+    start_time,
+    end_time,
+    purpose,
+    is_override,
+    override_reason,
+  } = req.body;
 
   if (!resource_id || !start_time || !end_time) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -48,7 +55,7 @@ router.post("/bookings", clerkAuth, async (req, res) => {
       endTime: { $gt: new Date(start_time) },
     });
 
-    if (conflict) {
+    if (conflict && !is_override) {
       return res.status(409).json({
         error: "Time slot already booked or pending approval",
       });
@@ -60,7 +67,8 @@ router.post("/bookings", clerkAuth, async (req, res) => {
       startTime: new Date(start_time),
       endTime: new Date(end_time),
       purpose,
-      status: "PENDING",
+      status: is_override ? "OVERRIDE_PENDING" : "PENDING",
+      overrideReason: is_override ? override_reason : undefined,
     });
 
     // Audit event
@@ -133,6 +141,25 @@ router.put("/bookings/:id", clerkAuth, async (req, res) => {
 
     if (new Date(booking.endTime) <= new Date()) {
       return res.status(400).json({ error: "Cannot edit past booking" });
+    }
+
+    const finalResource = resource_id || booking.resourceId;
+    const finalStart = start_time ? new Date(start_time) : booking.startTime;
+    const finalEnd = end_time ? new Date(end_time) : booking.endTime;
+
+    // Check for conflicts
+    const conflict = await Booking.findOne({
+      _id: { $ne: id },
+      resourceId: finalResource,
+      status: { $in: ["PENDING", "APPROVED"] },
+      startTime: { $lt: finalEnd },
+      endTime: { $gt: finalStart },
+    });
+
+    if (conflict) {
+      return res.status(409).json({
+        error: "Time slot already booked or pending approval",
+      });
     }
 
     if (start_time) booking.startTime = new Date(start_time);

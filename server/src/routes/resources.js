@@ -31,7 +31,8 @@ router.get("/resources", clerkAuth, async (req, res) => {
  * GET /resources/availability — resources available in a time window
  */
 router.get("/resources/availability", clerkAuth, async (req, res) => {
-  const { start_time, end_time, type, min_capacity } = req.query;
+  const { start_time, end_time, type, min_capacity, exclude_booking_id } =
+    req.query;
 
   if (!start_time || !end_time) {
     return res.status(400).json({
@@ -54,12 +55,18 @@ router.get("/resources/availability", clerkAuth, async (req, res) => {
     const resourceIds = resources.map((r) => r._id);
 
     // Find conflicting bookings
-    const conflicts = await Booking.find({
+    const conflictFilter = {
       resourceId: { $in: resourceIds },
       status: { $in: ["PENDING", "APPROVED"] },
       startTime: { $lt: new Date(end_time) },
       endTime: { $gt: new Date(start_time) },
-    }).select("resourceId");
+    };
+
+    if (exclude_booking_id) {
+      conflictFilter._id = { $ne: exclude_booking_id };
+    }
+
+    const conflicts = await Booking.find(conflictFilter).select("resourceId");
 
     const blockedIds = new Set(conflicts.map((c) => c.resourceId.toString()));
 

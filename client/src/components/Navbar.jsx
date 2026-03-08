@@ -203,7 +203,9 @@ function Navbar() {
                                 ? "border-amber-800 text-amber-400"
                                 : b.status === "REJECTED"
                                   ? "border-red-800 text-red-400"
-                                  : "border-zinc-700 text-zinc-400"
+                                  : b.status === "OVERRIDE_PENDING"
+                                    ? "border-purple-800 text-purple-400"
+                                    : "border-zinc-700 text-zinc-400"
                           }`}
                         >
                           {b.status}
@@ -216,13 +218,18 @@ function Navbar() {
                       {new Date(b.endTime).toLocaleTimeString()}
                     </p>
 
-                    {upcoming && (
+                    {upcoming && b.status === "PENDING" && (
                       <div className="flex gap-2 pt-1">
                         <Button
                           size="sm"
                           variant="outline"
                           className="h-7 text-xs"
-                          onClick={() => navigate("/dashboard")}
+                          onClick={() => {
+                            navigate("/dashboard", {
+                              state: { editBooking: b },
+                            });
+                            setShowHistory(false);
+                          }}
                         >
                           Edit
                         </Button>

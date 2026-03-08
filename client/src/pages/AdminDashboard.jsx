@@ -152,6 +152,27 @@ function AdminDashboard() {
     }
   };
 
+  const handleBookingAction = async (bookingId, action) => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${API}/admin/bookings/${bookingId}/${action}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body:
+          action === "reject-override" || action === "reject"
+            ? JSON.stringify({ reason: "Rejected by admin" })
+            : undefined,
+      });
+      if (!res.ok) throw new Error();
+      loadBookings();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   /* auto-load pending + users on mount */
   useEffect(() => {
     loadPending();
@@ -180,6 +201,7 @@ function AdminDashboard() {
       PENDING: "border-amber-800 text-amber-400",
       REJECTED: "border-red-800 text-red-400",
       CANCELLED: "border-zinc-700 text-zinc-400",
+      OVERRIDE_PENDING: "border-purple-800 text-purple-400",
     };
     return (
       <Badge
@@ -418,6 +440,9 @@ function AdminDashboard() {
                     <SelectContent>
                       <SelectItem value="ALL">All Status</SelectItem>
                       <SelectItem value="PENDING">Pending</SelectItem>
+                      <SelectItem value="OVERRIDE_PENDING">
+                        Overrides
+                      </SelectItem>
                       <SelectItem value="APPROVED">Approved</SelectItem>
                       <SelectItem value="REJECTED">Rejected</SelectItem>
                       <SelectItem value="CANCELLED">Cancelled</SelectItem>
@@ -455,7 +480,9 @@ function AdminDashboard() {
                           <TableHead>Date</TableHead>
                           <TableHead>Time</TableHead>
                           <TableHead>Purpose</TableHead>
+                          <TableHead>Reason</TableHead>
                           <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -485,7 +512,63 @@ function AdminDashboard() {
                             <TableCell className="max-w-[120px] truncate text-sm text-muted-foreground">
                               {b.purpose || "—"}
                             </TableCell>
+                            <TableCell className="max-w-[120px] truncate text-sm text-purple-400/80">
+                              {b.overrideReason || "—"}
+                            </TableCell>
                             <TableCell>{statusBadge(b.status)}</TableCell>
+                            <TableCell className="text-right whitespace-nowrap">
+                              {b.status === "OVERRIDE_PENDING" && (
+                                <div className="flex justify-end gap-1.5">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 px-2 border-emerald-800 text-emerald-400 hover:bg-emerald-950"
+                                    onClick={() =>
+                                      handleBookingAction(
+                                        b._id,
+                                        "approve-override",
+                                      )
+                                    }
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 px-2 border-red-800 text-red-400 hover:bg-red-950"
+                                    onClick={() =>
+                                      handleBookingAction(b._id, "reject")
+                                    }
+                                  >
+                                    Reject
+                                  </Button>
+                                </div>
+                              )}
+                              {b.status === "PENDING" && (
+                                <div className="flex justify-end gap-1.5">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 px-2 border-emerald-800 text-emerald-400 hover:bg-emerald-950"
+                                    onClick={() =>
+                                      handleBookingAction(b._id, "approve")
+                                    }
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 px-2 border-red-800 text-red-400 hover:bg-red-950"
+                                    onClick={() =>
+                                      handleBookingAction(b._id, "reject")
+                                    }
+                                  >
+                                    Reject
+                                  </Button>
+                                </div>
+                              )}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

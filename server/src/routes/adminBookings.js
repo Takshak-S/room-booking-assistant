@@ -136,4 +136,86 @@ router.post(
   },
 );
 
+/**
+ * GET /admin/bookings/overrides — list override requests
+ */
+router.get(
+  "/admin/bookings/overrides",
+  clerkAuth,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const bookings = await Booking.find({ status: "OVERRIDE_PENDING" })
+        .populate("resourceId", "name type")
+        .populate("userId", "name email")
+        .sort({ createdAt: 1 });
+      res.json(bookings);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  },
+);
+
+/**
+ * POST /admin/bookings/:bookingId/approve-override
+ */
+router.post(
+  "/admin/bookings/:bookingId/approve-override",
+  clerkAuth,
+  requireAdmin,
+  async (req, res) => {
+    const adminId = req.dbUser._id;
+    const { bookingId } = req.params;
+
+    try {
+      const booking = await Booking.findById(bookingId);
+      if (!booking || booking.status !== "OVERRIDE_PENDING") {
+        return res
+          .status(404)
+          .json({ error: "Override request not found or not pending" });
+      }
+
+      // Find all conflicting bookings
+      const conflicts = await Booking.find({
+        resourceId: booking.resourceId,
+        status: { $in: ["PENDING", "APPROVED"] },
+        startTime: { $lt: booking.endTime },
+        endTime: { $gt: booking.startTime },
+        _id: { $ne: booking._id },
+      });
+
+      // Cancel conflicts
+      for (const c of conflicts) {
+        c.status = "CANCELLED";
+        await c.save();
+        await BookingEvent.create({
+          bookingId: c._id,
+          eventType: "CANCELLED",
+          createdBy: adminId,
+          metadata: { note: "Cancelled due to admin override approval" },
+        });
+      }
+
+      // Approve this override
+      booking.status = "APPROVED";
+      booking.approvedBy = adminId;
+      booking.approvedAt = new Date();
+      await booking.save();
+
+      await BookingEvent.create({
+        bookingId,
+        eventType: "APPROVED",
+        createdBy: adminId,
+        metadata: { note: "Approved via override request" },
+      });
+
+      res.json({ success: true, cancelled_count: conflicts.length });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  },
+);
+
 export default router;

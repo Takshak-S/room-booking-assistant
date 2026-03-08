@@ -33,6 +33,7 @@ function BookingForm({
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [status, setStatus] = useState(null);
+  const [overrideReason, setOverrideReason] = useState("");
 
   useEffect(() => {
     setStatus(null);
@@ -69,9 +70,12 @@ function BookingForm({
     const token = await getToken();
     try {
       const params = new URLSearchParams({
-        start_time: `${dateStr}T${startTime}:00`,
-        end_time: `${dateStr}T${endTime}:00`,
+        start_time: new Date(`${dateStr}T${startTime}:00`).toISOString(),
+        end_time: new Date(`${dateStr}T${endTime}:00`).toISOString(),
       });
+      if (initialBooking) {
+        params.append("exclude_booking_id", initialBooking._id);
+      }
       const res = await fetch(
         `http://localhost:5000/api/resources/availability?${params}`,
         {
@@ -90,22 +94,35 @@ function BookingForm({
     }
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (isOverride = false) => {
+    if (isOverride && !overrideReason.trim()) {
+      alert("Please provide a reason for the override request.");
+      return;
+    }
+
     setStatus("submitting");
     const token = await getToken();
     const dateStr = format(date, "yyyy-MM-dd");
     try {
-      const res = await fetch("http://localhost:5000/api/bookings", {
-        method: "POST",
+      const isEdit = !!initialBooking;
+      const url = isEdit
+        ? `http://localhost:5000/api/bookings/${initialBooking._id}`
+        : "http://localhost:5000/api/bookings";
+      const method = isEdit ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           resource_id: resource._id,
-          start_time: `${dateStr}T${startTime}:00`,
-          end_time: `${dateStr}T${endTime}:00`,
-          purpose: "Event booking",
+          start_time: new Date(`${dateStr}T${startTime}:00`).toISOString(),
+          end_time: new Date(`${dateStr}T${endTime}:00`).toISOString(),
+          purpose: "",
+          is_override: isOverride,
+          override_reason: isOverride ? overrideReason : undefined,
         }),
       });
       const data = await res.json();
@@ -240,9 +257,42 @@ function BookingForm({
           </div>
         )}
         {status === "conflict" && (
-          <div className="flex items-center gap-3 rounded-lg border border-red-900 bg-red-950/30 p-4 text-sm text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">
-            <XCircle className="h-5 w-5 shrink-0" />
-            <p>This slot is already booked. Please choose another time.</p>
+          <div className="space-y-4 rounded-lg border border-amber-900 bg-amber-950/20 p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-3 text-sm text-amber-400">
+              <XCircle className="h-5 w-5 shrink-0" />
+              <p>
+                This slot is already booked. You can request an admin override.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs text-amber-200/50">
+                Reason for Override
+              </Label>
+              <textarea
+                className="w-full rounded-md border border-zinc-800 bg-zinc-900/50 p-2 text-sm focus:border-amber-700 focus:outline-none"
+                placeholder="Explain why you need this venue..."
+                rows={2}
+                value={overrideReason}
+                onChange={(e) => setOverrideReason(e.target.value)}
+              />
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full border-amber-800 text-amber-400 hover:bg-amber-900/20 h-10"
+              onClick={() => handleConfirm(true)}
+              disabled={status === "submitting"}
+            >
+              {status === "submitting" ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting…
+                </>
+              ) : (
+                "Request Override"
+              )}
+            </Button>
           </div>
         )}
         {status === "available" && (
@@ -253,7 +303,7 @@ function BookingForm({
             </div>
             <Button
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-11"
-              onClick={handleConfirm}
+              onClick={() => handleConfirm(false)}
               disabled={status === "submitting"}
             >
               {status === "submitting" ? (

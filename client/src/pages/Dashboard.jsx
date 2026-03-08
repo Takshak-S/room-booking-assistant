@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import ResourceSearchFilter from "../components/ResourceSearchFilter";
 
 function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { getToken } = useAuth();
 
   const [allResources, setAllResources] = useState([]);
@@ -76,6 +77,16 @@ function Dashboard() {
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
+
+  useEffect(() => {
+    if (location.state?.editBooking) {
+      const b = location.state.editBooking;
+      setSelectedResource(b.resourceId);
+      setEditingBooking(b);
+      // Clear location state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   return (
     <div className="min-h-screen bg-background">

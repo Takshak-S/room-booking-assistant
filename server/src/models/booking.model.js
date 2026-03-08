@@ -27,9 +27,11 @@ const BookingSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ["PENDING", "APPROVED", "REJECTED", "CANCELLED"],
+    enum: ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "OVERRIDE_PENDING"],
     default: "PENDING",
   },
+
+  overrideReason: String,
 
   createdAt: {
     type: Date,
