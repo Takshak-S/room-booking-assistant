@@ -12,6 +12,7 @@ import Navbar from "../components/Navbar";
 import ResourceList from "../components/ResourceList";
 import BookingForm from "../components/BookingForm";
 import ResourceSearchFilter from "../components/ResourceSearchFilter";
+import API_BASE_URL from "../lib/config";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function Dashboard() {
       return;
     }
 
-    let baseUrl = "http://localhost:5000/api/resources";
+    let baseUrl = `${API_BASE_URL}/api/resources`;
     const params = new URLSearchParams();
     if (filters.type) params.append("type", filters.type);
     if (filters.min_capacity)
@@ -52,7 +53,7 @@ function Dashboard() {
     if (hasTime) {
       params.append("start_time", `${filters.date}T${filters.start_time}:00`);
       params.append("end_time", `${filters.date}T${filters.end_time}:00`);
-      baseUrl = "http://localhost:5000/api/resources/availability";
+      baseUrl = `${API_BASE_URL}/api/resources/availability`;
     }
 
     const url = params.toString() ? `${baseUrl}?${params}` : baseUrl;

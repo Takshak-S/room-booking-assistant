@@ -16,11 +16,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ShieldAlert } from "lucide-react";
+import API_BASE_URL from "../lib/config";
 
 const AuthContext = createContext(null);
 
 const CACHE_KEY = "rba_profile";
-const API_BASE = "http://localhost:5000";
+const API_BASE = API_BASE_URL;
 
 function readCache() {
   try {

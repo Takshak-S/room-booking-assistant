@@ -61,7 +61,8 @@ router.post("/bookings", clerkAuth, async (req, res) => {
         endTime: { $gt: new Date(start_time) },
       }).session(session);
 
-      if (conflict && !is_override) {
+      const hasConflict = !!conflict;
+      if (hasConflict && !is_override) {
         throw new Error("CONFLICT");
       }
 
@@ -73,8 +74,8 @@ router.post("/bookings", clerkAuth, async (req, res) => {
             startTime: new Date(start_time),
             endTime: new Date(end_time),
             purpose,
-            status: is_override ? "OVERRIDE_PENDING" : "PENDING",
-            overrideReason: is_override ? override_reason : undefined,
+            status: (hasConflict && is_override) ? "OVERRIDE_PENDING" : "PENDING",
+            overrideReason: (hasConflict && is_override) ? override_reason : undefined,
           },
         ],
         { session },

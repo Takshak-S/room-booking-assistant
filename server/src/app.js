@@ -11,11 +11,14 @@ import adminBookingsRoutes from "./routes/adminBookings.js";
 import historyRoutes from "./routes/history.js";
 import resourceRoutes from "./routes/resources.js";
 import adminUsersRoutes from "./routes/adminUsers.js";
-import aiRoutes from "./routes/ai.js";
 
 const app = express();
 
-app.use(cors());
+const allowedOrigin = process.env.ALLOWED_ORIGIN || "*";
+app.use(cors({
+  origin: allowedOrigin,
+  credentials: true
+}));
 app.use(express.json());
 app.use(clerkMiddleware());
 
@@ -27,7 +30,6 @@ app.use("/api", adminBookingsRoutes);
 app.use("/api", historyRoutes);
 app.use("/api", resourceRoutes);
 app.use("/api", adminUsersRoutes);
-app.use("/api", aiRoutes);
 
 app.get("/api/test", (req, res) => {
   res.json({ ok: true });

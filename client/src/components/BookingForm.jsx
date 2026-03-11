@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import ClockPicker from "./ClockPicker";
+import API_BASE_URL from "../lib/config";
 
 function BookingForm({
   resource,
@@ -50,6 +51,11 @@ function BookingForm({
     }
   }, [resource, initialBooking]);
 
+  useEffect(() => {
+    setStatus(null);
+    setOverrideReason("");
+  }, [date, startTime, endTime]);
+
   const handleCheck = async (e) => {
     if (e) e.preventDefault();
     if (!date || !startTime || !endTime) return;
@@ -77,7 +83,7 @@ function BookingForm({
         params.append("exclude_booking_id", initialBooking._id);
       }
       const res = await fetch(
-        `http://localhost:5000/api/resources/availability?${params}`,
+        `${API_BASE_URL}/api/resources/availability?${params}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -106,8 +112,8 @@ function BookingForm({
     try {
       const isEdit = !!initialBooking;
       const url = isEdit
-        ? `http://localhost:5000/api/bookings/${initialBooking._id}`
-        : "http://localhost:5000/api/bookings";
+        ? `${API_BASE_URL}/api/bookings/${initialBooking._id}`
+        : `${API_BASE_URL}/api/bookings`;
       const method = isEdit ? "PUT" : "POST";
 
       const res = await fetch(url, {

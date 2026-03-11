@@ -15,6 +15,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useAppAuth } from "../context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import API_BASE_URL from "../lib/config";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = API_BASE_URL;
 
 function Navbar() {
   const navigate = useNavigate();

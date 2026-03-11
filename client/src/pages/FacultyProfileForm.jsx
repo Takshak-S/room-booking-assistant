@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BookOpen, Loader2 } from "lucide-react";
+import API_BASE_URL from "../lib/config";
 
 function FacultyProfileForm() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ function FacultyProfileForm() {
           return;
         }
         const token = await getToken();
-        const res = await fetch("http://localhost:5000/api/me", {
+        const res = await fetch(`${API_BASE_URL}/api/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
@@ -61,7 +62,7 @@ function FacultyProfileForm() {
         navigate("/");
         return;
       }
-      const res = await fetch("http://localhost:5000/api/profile/faculty", {
+      const res = await fetch(`${API_BASE_URL}/api/profile/faculty`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Navbar from "../components/Navbar";
+import API_BASE_URL from "../lib/config";
 import {
   CheckCircle2,
   Loader2,
@@ -33,7 +34,7 @@ import {
   Inbox,
 } from "lucide-react";
 
-const API = "http://localhost:5000/api";
+const API = `${API_BASE_URL}/api`;
 
 function AdminDashboard() {
   const navigate = useNavigate();
